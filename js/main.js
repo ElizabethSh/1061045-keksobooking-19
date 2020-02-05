@@ -1,21 +1,99 @@
 'use strict';
 
+var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_HEIGHT = document.querySelector('.map__pin--main').scrollHeight;
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
+var X_MAX = 1200;
+var Y_MIN = 130;
+var Y_MAX = 630;
+var ENTER_KEY = 'Enter';
+
+
 var types = ['palace', 'flat', 'house', 'bungalo'];
 var checkins = ['12:00', '13:00', '14:00'];
 var checkouts = ['12:00', '13:00', '14:00'];
 var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var photos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 var announcements = [];
-var PIN_WIDTH = 50;
-var PIN_HEIGHT = 70;
 
-var openMap = document.querySelector('.map');
-openMap.classList.remove('map--faded');
 
-var similarListElement = openMap.querySelector('.map__pins');
+var map = document.querySelector('.map');
+var mapPinMain = document.querySelector('.map__pin--main');
+var mapFilter = map.querySelector('.map__filters');
+var mapFilterFields = mapFilter.querySelectorAll('select');
+var noticeForm = document.querySelector('.ad-form');
+var addressField = noticeForm.querySelector('#address');
+
+var similarListElement = map.querySelector('.map__pins');
 var similarAnnouncementTemplate = document.querySelector('#pin')
       .content
       .querySelector('button');
+var notice = document.querySelector('.notice');
+var noticeFieldsets = notice.querySelectorAll('fieldset');
+
+// Валидация формы
+
+var roomNumber = noticeForm.querySelector('#room_number');
+var capacity = noticeForm.querySelector('#capacity');
+
+roomNumber.addEventListener('change', function () {
+  if (roomNumber.value === '1' && capacity.value === '1') {
+    roomNumber.setCustomValidity('');
+  } else {
+    roomNumber.setCustomValidity('Для такого количества гостей можно выбрать 1 комнату');
+  }
+});
+
+
+// Переводит страницу в неактивное состояние
+
+var mapPinMainCoordinates = mapPinMain.style;
+
+var mapPinMainX = mapPinMainCoordinates.left.replace('px', '') * 1 + Math.round(MAIN_PIN_WIDTH / 2);
+var mapPinMainY = mapPinMainCoordinates.top.replace('px', '') * 1 + Math.round(MAIN_PIN_WIDTH / 2);
+addressField.setAttribute('value', mapPinMainX + ', ' + mapPinMainY);
+mapFilter.querySelector('fieldset').setAttribute('disabled', '');
+
+for (i = 0; i < mapFilterFields.length; i++) {
+  mapFilterFields[i].setAttribute('disabled', '');
+}
+
+for (var i = 0; i < noticeFieldsets.length; i++) {
+  noticeFieldsets[i].setAttribute('disabled', '');
+}
+
+// Переводит страницу в активное состояние
+
+var activatePage = function () {
+  mapPinMainY = mapPinMainCoordinates.top.replace('px', '') * 1 + MAIN_PIN_HEIGHT;
+
+  map.classList.remove('map--faded');
+  for (i = 0; i < mapFilterFields.length; i++) {
+    mapFilterFields[i].removeAttribute('disabled');
+  }
+  mapFilter.querySelector('fieldset').removeAttribute('disabled');
+  noticeForm.classList.remove('ad-form--disabled');
+  for (i = 0; i < noticeFieldsets.length; i++) {
+    noticeFieldsets[i].removeAttribute('disabled');
+  }
+  similarListElement.appendChild(fragment);
+  addressField.setAttribute('value', mapPinMainX + ', ' + mapPinMainY);
+};
+
+mapPinMain.addEventListener('mousedown', function () {
+  if (event.which === 1) {
+    activatePage();
+  }
+});
+
+mapPinMain.addEventListener('keydown', function (evt) {
+  if (evt.key === ENTER_KEY) {
+    activatePage();
+  }
+});
+
+// Код для отрисовки магов
 
 var getNumber = function (min, max) {
   var randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -44,8 +122,8 @@ var getArraysValue = function (arr) {
 };
 
 var getArraysData = function (index) {
-  var locationX = getNumber(0, 1200);
-  var locationY = getNumber(130, 630);
+  var locationX = getNumber(0, X_MAX);
+  var locationY = getNumber(Y_MIN, Y_MAX);
   index = index + 1;
 
   var arrayItem = {
@@ -76,7 +154,7 @@ var getArraysData = function (index) {
   return arrayItem;
 };
 
-for (var i = 0; i < 8; i++) {
+for (i = 0; i < 8; i++) {
   announcements[i] = getArraysData(i);
 }
 
@@ -96,4 +174,4 @@ for (var k = 0; k < 8; k++) {
   fragment.appendChild(renderAnnouncement(announcements[k]));
 }
 
-similarListElement.appendChild(fragment);
+
