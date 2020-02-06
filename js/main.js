@@ -32,20 +32,6 @@ var similarAnnouncementTemplate = document.querySelector('#pin')
 var notice = document.querySelector('.notice');
 var noticeFieldsets = notice.querySelectorAll('fieldset');
 
-// Валидация формы
-
-var roomNumber = noticeForm.querySelector('#room_number');
-var capacity = noticeForm.querySelector('#capacity');
-
-roomNumber.addEventListener('change', function () {
-  if (roomNumber.value === '1' && capacity.value === '1') {
-    roomNumber.setCustomValidity('');
-  } else {
-    roomNumber.setCustomValidity('Для такого количества гостей можно выбрать 1 комнату');
-  }
-});
-
-
 // Переводит страницу в неактивное состояние
 
 var mapPinMainCoordinates = mapPinMain.style;
@@ -93,7 +79,46 @@ mapPinMain.addEventListener('keydown', function (evt) {
   }
 });
 
-// Код для отрисовки магов
+// Валидация формы
+
+var roomNumber = noticeForm.querySelector('#room_number');
+var capacity = noticeForm.querySelector('#capacity');
+
+var onRoomsCapasityChange = function () {
+  if (roomNumber.value === '1' && capacity.value === '1') {
+    roomNumber.setCustomValidity('');
+  } else {
+    roomNumber.setCustomValidity('Для такого количества комнат можно выбрать 1 гостя');
+  }
+
+  if ((roomNumber.value === '2' && capacity.value === '1') || (roomNumber.value === '2' && capacity.value === '2')) {
+    roomNumber.setCustomValidity('');
+  } else {
+    roomNumber.setCustomValidity('Для такого количества комнат можно выбрать 1 или 2 гостей');
+  }
+
+  if ((roomNumber.value === '3' && capacity.value === '1') || (roomNumber.value === '3' && capacity.value === '2') || (roomNumber.value === '3' && capacity.value === '3')) {
+    roomNumber.setCustomValidity('');
+  } else {
+    roomNumber.setCustomValidity('Для такого количества комнат можно выбрать 1, 2 или 3 гостей');
+  }
+
+  if (roomNumber.value === '100' && capacity.value === '0') {
+    roomNumber.setCustomValidity('');
+  } else {
+    roomNumber.setCustomValidity('Для такого количества комнат можно выбрать вариант "не для гостей"');
+  }
+};
+
+roomNumber.addEventListener('change', function () {
+  onRoomsCapasityChange();
+});
+
+capacity.addEventListener('change', function () {
+  onRoomsCapasityChange();
+});
+
+// вспомогательный код
 
 var getNumber = function (min, max) {
   var randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -153,6 +178,8 @@ var getArraysData = function (index) {
 
   return arrayItem;
 };
+
+// Код для отрисовки пинов на карте
 
 for (i = 0; i < 8; i++) {
   announcements[i] = getArraysData(i);
