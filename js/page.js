@@ -78,9 +78,10 @@
     main.appendChild(similarErrorWindow); // рисуем сообщение
     var errorButton = document.querySelector('.error__button');
     window.page.deactivatePage();
-    errorButton.addEventListener('click', function () { // закрывает окно с ошибкой по клику на кнопку
-      closeErrorMessage();
-    });
+    map.classList.add('map--faded');
+    noticeForm.classList.add('ad-form--disabled');
+    errorButton.addEventListener('click', closeErrorMessage); // закрывает окно с ошибкой по клику на кнопку
+    document.querySelector('.error').addEventListener('click', closeErrorMessage);
     errorButton.addEventListener('keydown', function (evt) { // закрывает окно с ошибкой по Enter на кнопку
       window.util.isEnterEvent(evt, closeErrorMessage);
     });
