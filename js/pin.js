@@ -4,18 +4,11 @@
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
 
-  var announcements = [];
   var map = document.querySelector('.map');
   var similarListElement = map.querySelector('.map__pins');
   var similarAnnouncementTemplate = document.querySelector('#pin')
         .content
         .querySelector('button');
-
-  // Код для отрисовки пинов на карте
-
-  for (var i = 0; i < 8; i++) {
-    announcements[i] = window.data.getArraysData(i);
-  }
 
   var renderAnnouncement = function (announcement) {
     var announcementElement = similarAnnouncementTemplate.cloneNode(true);
@@ -28,7 +21,7 @@
     return announcementElement;
   };
 
-  window.createPin = function () {
+  window.createPin = function (announcements) {
     var fragment = document.createDocumentFragment();
     for (var k = 0; k < 8; k++) {
       fragment.appendChild(renderAnnouncement(announcements[k]));
@@ -36,4 +29,3 @@
     similarListElement.appendChild(fragment);
   };
 })();
-
