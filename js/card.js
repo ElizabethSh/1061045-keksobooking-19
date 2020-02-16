@@ -22,7 +22,7 @@
       features: ['elevator', 'conditioner'],
       description: 'Маленькая чистая квратира на краю парка. Без интернета, регистрации и СМС.',
       photos: [
-        'https://cdn.ostrovok.ru/t/x500/carsolize/images/hotels/01488611-c1f9-4854-ad67-9f0ad3e857e6.jpeg',
+        'https://cdn.ostrovok.ru/t/x500/mec/hotels/5000000/4500000/4493700/4493658/4493658_17_b.jpg',
         'https://cdn.ostrovok.ru/t/x500/carsolize/images/hotels/23e332cb-1379-4582-85ac-901d6c441635.jpeg',
       ],
     },
@@ -52,12 +52,15 @@
     var newElement = document.createElement('img');
     newElement.className = 'popup__photo';
     newElement.setAttribute('src', photo);
+    newElement.setAttribute('width', '45');
+    newElement.setAttribute('height', '40');
     return newElement;
   };
 
 
   var createPhotos = function (array) {
     var popupPhotos = document.querySelector('.popup__photos');
+    document.querySelector('.popup__photo').remove();
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < announcement.offer.photos.length; i++) {
 
@@ -65,8 +68,6 @@
     }
     popupPhotos.appendChild(fragment);
   };
-
-  createPhotos(announcement.offer.photos);
 
   // код для создания и заполнения карточек
 
@@ -91,6 +92,7 @@
     fragment.appendChild(renderCard(announcement));
 
     similarListElement.appendChild(fragment);
+    createPhotos(announcement.offer.photos);
   };
 
   createCard(); // вызов функции, чтобы проверить отрисовку карточки
