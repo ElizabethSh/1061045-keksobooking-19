@@ -8,6 +8,8 @@
                             content.querySelector('div');
   var main = document.querySelector('main'); // куда клонируем
 
+  // соответствие полей кол-во комнат и кол-во гостей
+
   var onRoomsCapasityChange = function () {
     if (roomNumber.value === '1' && capacity.value !== '1') {
       roomNumber.setCustomValidity('Для такого количества комнат можно выбрать 1 гостя');
@@ -30,13 +32,41 @@
     onRoomsCapasityChange();
   });
 
+  // время заезда и выезда
+
+  var timeIn = noticeForm.querySelector('#timein');
+  var timeOut = noticeForm.querySelector('#timeout');
+
+  timeIn.addEventListener('change', function () {
+    timeOut.value = timeIn.value;
+  });
+
+  timeOut.addEventListener('change', function () {
+    timeIn.value = timeOut.value;
+  });
+
+  // соответствие типа жилья и минимальной цены
+
+  var propertyType = noticeForm.querySelector('#type');
+  var price = noticeForm.querySelector('#price');
+  var priceOfPropertyMap = {
+    bungalo: 0,
+    flat: 1000,
+    house: 5000,
+    palace: 10000
+  };
+
+  var onPropertyTypeChange = function () {
+    price.placeholder = priceOfPropertyMap[propertyType.value];
+    price.setAttribute('min', priceOfPropertyMap[propertyType.value]);
+  };
+
+  propertyType.addEventListener('change', function () {
+    onPropertyTypeChange();
+  });
+
   // отправка формы
   var map = document.querySelector('.map');
-
-  var closeSuccessWindow = function () {
-    var successWindow = document.querySelector('.success');
-    successWindow.remove();
-  };
 
   noticeForm.addEventListener('submit', function (evt) {
     window.backend.send(new FormData(noticeForm), function () {
@@ -46,11 +76,11 @@
       var windowSuccess = similarSuccessWindow.cloneNode(true);
       main.appendChild(windowSuccess);
       main.querySelector('.success').addEventListener('click', function () {
-        closeSuccessWindow();
+        window.util.removeElement('.success');
         noticeForm.reset();
       });
       document.addEventListener('keydown', function (evtEsc) {
-        window.util.isEscapeEvent(evtEsc, closeSuccessWindow);
+        window.util.isEscapeEvent(evtEsc, window.util.removeElement('.success'));
         noticeForm.reset();
       });
     }, window.page.errorHandler);
