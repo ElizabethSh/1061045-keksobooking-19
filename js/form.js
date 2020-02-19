@@ -4,6 +4,9 @@
   var noticeForm = document.querySelector('.ad-form');
   var roomNumber = noticeForm.querySelector('#room_number');
   var capacity = noticeForm.querySelector('#capacity');
+  var similarSuccessWindow = document.querySelector('#success').
+                            content.querySelector('div');
+  var main = document.querySelector('main'); // куда клонируем
 
   var onRoomsCapasityChange = function () {
     if (roomNumber.value === '1' && capacity.value !== '1') {
@@ -25,5 +28,27 @@
 
   capacity.addEventListener('change', function () {
     onRoomsCapasityChange();
+  });
+
+  // отправка формы
+  var map = document.querySelector('.map');
+
+  var closeSuccessWindow = function () {
+    var successWindow = document.querySelector('.success');
+    successWindow.remove();
+  };
+
+  noticeForm.addEventListener('submit', function (evt) {
+    window.backend.send(new FormData(noticeForm), function () {
+      // map.classList.add('map--faded');
+      // noticeForm.classList.add('ad-form--disabled');
+      var windowSuccess = similarSuccessWindow.cloneNode(true);
+      main.appendChild(windowSuccess);
+      main.querySelector('.success').addEventListener('click', closeSuccessWindow);
+      document.addEventListener('keydown', function (evtEsc) {
+        window.util.isEscapeEvent(evtEsc, closeSuccessWindow);
+      });
+    }, window.page.errorHandler);
+    evt.preventDefault();
   });
 })();
