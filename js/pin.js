@@ -10,7 +10,7 @@
         .content
         .querySelector('button');
 
-  var renderAnnouncement = function (announcement) {
+  var renderPin = function (announcement) {
     var announcementElement = similarAnnouncementTemplate.cloneNode(true);
 
     announcementElement.style.left = announcement.location.x + PIN_WIDTH / 2 + 'px';
@@ -21,11 +21,14 @@
     return announcementElement;
   };
 
-  window.createPin = function (announcements) {
-    var fragment = document.createDocumentFragment();
-    for (var k = 0; k < 8; k++) {
-      fragment.appendChild(renderAnnouncement(announcements[k]));
+  window.createPin = function (data) {
+    var takeNumber = data.length > 5 ? 5 : data.length; // выводить не больше 5 элементов
+    similarListElement.innerHTML = '';
+    // var fragment = document.createDocumentFragment();
+    for (var k = 0; k < takeNumber; k++) {
+      similarListElement.appendChild(renderPin(data[k]));
     }
-    similarListElement.appendChild(fragment);
+    // similarListElement.appendChild(fragment);
   };
+
 })();
