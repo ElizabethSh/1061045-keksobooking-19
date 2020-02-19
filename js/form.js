@@ -40,15 +40,24 @@
 
   noticeForm.addEventListener('submit', function (evt) {
     window.backend.send(new FormData(noticeForm), function () {
-      // map.classList.add('map--faded');
-      // noticeForm.classList.add('ad-form--disabled');
+      window.page.deactivatePage();
+      map.classList.add('map--faded');
+      noticeForm.classList.add('ad-form--disabled');
       var windowSuccess = similarSuccessWindow.cloneNode(true);
       main.appendChild(windowSuccess);
-      main.querySelector('.success').addEventListener('click', closeSuccessWindow);
+      main.querySelector('.success').addEventListener('click', function () {
+        closeSuccessWindow();
+        noticeForm.reset();
+      });
       document.addEventListener('keydown', function (evtEsc) {
         window.util.isEscapeEvent(evtEsc, closeSuccessWindow);
+        noticeForm.reset();
       });
     }, window.page.errorHandler);
     evt.preventDefault();
+  });
+
+  noticeForm.addEventListener('reset', function () {
+    noticeForm.reset();
   });
 })();
