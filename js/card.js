@@ -120,6 +120,13 @@
     map.insertBefore(fragment, mapFiltersContainer);
     createPhotos(announcement.offer.photos); // добавляем фото объекта размещения
     createFutures(announcement.offer.features); // добавляем доступные удобства
+    var popupClose = document.querySelector('.popup__close');
+    popupClose.addEventListener('click', function () {
+      window.util.removeElement('.map__card');
+    });
+    document.addEventListener('keydown', function (evt) {
+      window.util.isEscapeEvent(evt, window.util.removeElement('.map__card'));
+    });
   };
 
   window.createCard(); // вызов функции, чтобы проверить отрисовку карточки
