@@ -23,7 +23,6 @@
 
   window.createPin = function (data) {
     var takeNumber = data.length > 5 ? 5 : data.length; // выводить не больше 5 элементов
-    similarListElement.innerHTML = '';
     // var fragment = document.createDocumentFragment();
     for (var k = 0; k < takeNumber; k++) {
       similarListElement.appendChild(renderPin(data[k]));
