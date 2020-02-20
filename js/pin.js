@@ -10,7 +10,7 @@
         .content
         .querySelector('button');
   var addressField = document.querySelector('#address');
-  console.log(addressField);
+  // console.log(addressField);
 
   var renderPin = function (announcement) {
     var announcementElement = similarAnnouncementTemplate.cloneNode(true);
@@ -63,7 +63,7 @@
       mainPinHandler.style.top = (mainPinHandler.offsetTop - shift.y) + 'px';
       mainPinHandler.style.left = (mainPinHandler.offsetLeft - shift.x) + 'px';
 
-      console.log(mainPinHandler.offsetTop);
+      // console.log(mainPinHandler.offsetTop);
 
     };
 

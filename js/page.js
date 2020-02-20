@@ -74,7 +74,7 @@
     }
     // window.createPin(); // создает пины на карте
     addressField.setAttribute('value', mapPinMainX + ', ' + mapPinMainY); // при активации страницы меняет координату в поле адрес
-    console.log(mapPinMainX);
+    // console.log(mapPinMainX);
   };
 
   mapPinMain.addEventListener('mousedown', function () {
