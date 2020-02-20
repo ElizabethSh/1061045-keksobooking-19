@@ -54,7 +54,7 @@
   var activatePage = function () {
     window.backend.load(URL_GET, successHandler, errorHandler);
     mapPinMainY = mapPinMainCoordinates.y * 1 + MAIN_PIN_HEIGHT;
-    console.log(mapPinMainY);
+    // console.log(mapPinMainY);
 
     map.classList.remove('map--faded');
     for (var i = 0; i < mapFilterFields.length; i++) {
@@ -84,7 +84,7 @@
 
   // similar.js
 
-  var announcements = [];
+  /* var announcements = [];
   var propertyMap = {
     'flat': 'Квартира',
     'bungalo': 'Бунгало',
