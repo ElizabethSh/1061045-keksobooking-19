@@ -9,6 +9,8 @@
   var similarAnnouncementTemplate = document.querySelector('#pin')
         .content
         .querySelector('button');
+  var addressField = document.querySelector('#address');
+  console.log(addressField);
 
   var renderPin = function (announcement) {
     var announcementElement = similarAnnouncementTemplate.cloneNode(true);
@@ -24,6 +26,7 @@
   window.createPin = function (data) {
     var takeNumber = data.length > 5 ? 5 : data.length; // выводить не больше 5 элементов
     // var fragment = document.createDocumentFragment();
+    window.removePins();
     for (var k = 0; k < takeNumber; k++) {
       similarListElement.appendChild(renderPin(data[k]));
     }
@@ -55,13 +58,18 @@
         y: moveEvt.clientY
       };
 
+      addressField.setAttribute('value', (mainPinHandler.offsetTop) + ', ' + mainPinHandler.offsetLeft);
+
       mainPinHandler.style.top = (mainPinHandler.offsetTop - shift.y) + 'px';
       mainPinHandler.style.left = (mainPinHandler.offsetLeft - shift.x) + 'px';
+
+      console.log(mainPinHandler.offsetTop);
+
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-
+      addressField.setAttribute('value', (mainPinHandler.offsetTop) + ', ' + mainPinHandler.offsetLeft);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
