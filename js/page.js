@@ -9,18 +9,21 @@
   var map = document.querySelector('.map');
   var mapPinMain = document.querySelector('.map__pin--main');
   var noticeForm = document.querySelector('.ad-form');
-  var addressField = noticeForm.querySelector('#address');
   var mapFilter = map.querySelector('.map__filters');
   var mapFilterFields = mapFilter.querySelectorAll('select');
   var notice = document.querySelector('.notice');
   var noticeFieldsets = notice.querySelectorAll('fieldset');
 
-  var mapPinMainCoordinates = {
+  var addressField = noticeForm.querySelector('#address'); // находим поле адреса
+  var mapPinMainCoordinates = {// определяем координаты левого верхнего угла пина
     x: mapPinMain.style.left.replace('px', ''),
     y: mapPinMain.style.top.replace('px', '')
   };
+
+  // определяем координаты центра пина
   var mapPinMainX = mapPinMainCoordinates.x * 1 + Math.round(MAIN_PIN_WIDTH / 2);
   var mapPinMainY = mapPinMainCoordinates.y * 1 + Math.round(MAIN_PIN_WIDTH / 2);
+  //
   var main = document.querySelector('main'); // куда клонируем
   var similarErrorTemplate = document.querySelector('#error') // нашли что клонировать
                              .content
@@ -31,11 +34,14 @@
   var deactivatePage = function () {
     map.classList.add('map--faded');
     noticeForm.classList.add('ad-form--disabled');
-    mapPinMain.style.left = mapPinMainCoordinates.x + 'px';
-    mapPinMain.style.top = mapPinMainCoordinates.y + 'px';
 
+    // запоминаем начальные координаты пина до его перемещения
+    mapPinMain.style.top = mapPinMainCoordinates.y + 'px';
+    // при деактивайии координата Y меняется (центр метки)
     mapPinMainY = mapPinMainCoordinates.y * 1 + Math.round(MAIN_PIN_WIDTH / 2);
+    // подставляем координаты в поле адрес
     addressField.setAttribute('value', mapPinMainX + ', ' + mapPinMainY);
+
     mapFilter.querySelector('fieldset').setAttribute('disabled', '');
 
     for (i = 0; i < mapFilterFields.length; i++) {
@@ -53,8 +59,9 @@
 
   var activatePage = function () {
     window.backend.load(URL_GET, successHandler, errorHandler);
+
+    // при активации координата Y изменяется (указатель пина)
     mapPinMainY = mapPinMainCoordinates.y * 1 + MAIN_PIN_HEIGHT;
-    // console.log(mapPinMainY);
 
     map.classList.remove('map--faded');
     for (var i = 0; i < mapFilterFields.length; i++) {
@@ -66,7 +73,8 @@
       noticeFieldsets[i].removeAttribute('disabled'); // убирает из объявлений с selectов disabled
     }
     // window.createPin(); // создает пины на карте
-    addressField.setAttribute('value', mapPinMainX + ', ' + mapPinMainY); // при активации страницы меняет координату Y main-pin
+    addressField.setAttribute('value', mapPinMainX + ', ' + mapPinMainY); // при активации страницы меняет координату в поле адрес
+    console.log(mapPinMainX);
   };
 
   mapPinMain.addEventListener('mousedown', function () {
