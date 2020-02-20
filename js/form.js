@@ -66,7 +66,8 @@
   });
 
   // отправка формы
-  var map = document.querySelector('.map');
+
+  // var map = document.querySelector('.map');
 
   /* var removePins = function () {
     var otherPins = [];
@@ -93,9 +94,27 @@
     evt.preventDefault();
   });
 
+  var similarListElement = document.querySelector('.map__pins');
+
+  window.removePins = function () {
+    var pins = [];
+    pins = similarListElement.querySelectorAll('button[type="button"]');
+    pins.forEach(function (it) {
+      it.remove();
+    });
+  };
+
+  var removeCard = function () {
+    var mapCard = document.querySelector('.map__card');
+    if (mapCard) {
+      mapCard.remove();
+    }
+  };
+
   noticeForm.addEventListener('reset', function () {
     noticeForm.reset();
     window.page.deactivatePage();
-    window.util.closePopup('.map__card');
+    removeCard();
+    window.removePins();
   });
 })();
