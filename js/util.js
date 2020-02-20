@@ -23,9 +23,19 @@
     }
   };
 
+  var removeElement = function (className) {
+    document.querySelector(className).remove();
+  };
+
+  var closePopup = function (className) {
+    document.querySelector(className).classList.add('hidden');
+  };
+
   window.util = {
     isEnterEvent: isEnterEvent,
     isMouseLeftEvent: isMouseLeftEvent,
-    isEscapeEvent: isEscapeEvent
+    isEscapeEvent: isEscapeEvent,
+    removeElement: removeElement,
+    closePopup: closePopup
   };
 })();
