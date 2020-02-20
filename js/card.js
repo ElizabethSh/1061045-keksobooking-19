@@ -113,6 +113,21 @@
     return cardElement;
   };
 
+  // если произошло нажатие по esc вызывает функцию removeCard
+
+  var onCardEscPress = function (evt) {
+    window.util.isEscapeEvent(evt, closeCard);
+  };
+
+  // удаляет элемент с классом .map__card
+
+  var closeCard = function () {
+    window.util.closePopup('.map__card');
+    document.removeEventListener('keydown', onCardEscPress);
+  };
+
+  // рисует карточку объявления
+
   window.createCard = function () {
     var fragment = document.createDocumentFragment();
     fragment.appendChild(renderCard(announcement)); // создаем карточку
@@ -120,13 +135,11 @@
     map.insertBefore(fragment, mapFiltersContainer);
     createPhotos(announcement.offer.photos); // добавляем фото объекта размещения
     createFutures(announcement.offer.features); // добавляем доступные удобства
-    var popupClose = document.querySelector('.popup__close');
-    popupClose.addEventListener('click', function () {
-      window.util.removeElement('.map__card');
+    var popupCloseButton = document.querySelector('.popup__close');
+    popupCloseButton.addEventListener('click', function () {
+      window.util.closePopup('.map__card');
     });
-    document.addEventListener('keydown', function (evt) {
-      window.util.isEscapeEvent(evt, window.util.removeElement('.map__card'));
-    });
+    document.addEventListener('keydown', onCardEscPress);
   };
 
   window.createCard(); // вызов функции, чтобы проверить отрисовку карточки
