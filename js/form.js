@@ -68,11 +68,17 @@
   // отправка формы
   var map = document.querySelector('.map');
 
+  /* var removePins = function () {
+    var otherPins = [];
+    otherPins = similarListElement.querySelectorAll('button[type="button"]');
+    otherPins.forEach(function (it) {
+      it.remove();
+    });
+  };*/
+
   noticeForm.addEventListener('submit', function (evt) {
     window.backend.send(new FormData(noticeForm), function () {
       window.page.deactivatePage();
-      map.classList.add('map--faded');
-      noticeForm.classList.add('ad-form--disabled');
       var windowSuccess = similarSuccessWindow.cloneNode(true);
       main.appendChild(windowSuccess);
       main.querySelector('.success').addEventListener('click', function () {
@@ -89,5 +95,7 @@
 
   noticeForm.addEventListener('reset', function () {
     noticeForm.reset();
+    window.page.deactivatePage();
+    window.util.closePopup('.map__card');
   });
 })();
