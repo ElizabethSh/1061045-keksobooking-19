@@ -3,6 +3,8 @@
 (function () {
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = document.querySelector('.map__pin--main').scrollHeight;
+  var URL_GET = 'https://js.dump.academy/keksobooking/data';
+  // var GET_POST = 'https://js.dump.academy/keksobooking';
 
   var map = document.querySelector('.map');
   var mapPinMain = document.querySelector('.map__pin--main');
@@ -13,16 +15,26 @@
   var notice = document.querySelector('.notice');
   var noticeFieldsets = notice.querySelectorAll('fieldset');
 
-  var mapPinMainCoordinates = mapPinMain.style;
-  var mapPinMainX = mapPinMainCoordinates.left.replace('px', '') * 1 + Math.round(MAIN_PIN_WIDTH / 2);
-  var mapPinMainY = mapPinMainCoordinates.top.replace('px', '') * 1 + Math.round(MAIN_PIN_WIDTH / 2);
+  var mapPinMainCoordinates = {
+    x: mapPinMain.style.left.replace('px', ''),
+    y: mapPinMain.style.top.replace('px', '')
+  };
+  var mapPinMainX = mapPinMainCoordinates.x * 1 + Math.round(MAIN_PIN_WIDTH / 2);
+  var mapPinMainY = mapPinMainCoordinates.y * 1 + Math.round(MAIN_PIN_WIDTH / 2);
   var main = document.querySelector('main'); // куда клонируем
   var similarErrorTemplate = document.querySelector('#error') // нашли что клонировать
                              .content
                              .querySelector('div');
 
   // Переводит страницу в неактивное состояние
+
   var deactivatePage = function () {
+    map.classList.add('map--faded');
+    noticeForm.classList.add('ad-form--disabled');
+    mapPinMain.style.left = mapPinMainCoordinates.x + 'px';
+    mapPinMain.style.top = mapPinMainCoordinates.y + 'px';
+
+    mapPinMainY = mapPinMainCoordinates.y * 1 + Math.round(MAIN_PIN_WIDTH / 2);
     addressField.setAttribute('value', mapPinMainX + ', ' + mapPinMainY);
     mapFilter.querySelector('fieldset').setAttribute('disabled', '');
 
@@ -40,8 +52,9 @@
   // Переводит страницу в активное состояние
 
   var activatePage = function () {
-    window.backend.loading(successHandler, errorHandler);
-    mapPinMainY = mapPinMainCoordinates.top.replace('px', '') * 1 + MAIN_PIN_HEIGHT;
+    window.backend.load(URL_GET, successHandler, errorHandler);
+    mapPinMainY = mapPinMainCoordinates.y * 1 + MAIN_PIN_HEIGHT;
+    console.log(mapPinMainY);
 
     map.classList.remove('map--faded');
     for (var i = 0; i < mapFilterFields.length; i++) {
@@ -69,15 +82,42 @@
     errorWindow.remove();
   };
 
+  // similar.js
+
+  var announcements = [];
+  var propertyMap = {
+    'flat': 'Квартира',
+    'bungalo': 'Бунгало',
+    'house': 'Дом',
+    'palace': 'Дворец',
+    'any': 'Любой тип жилья'
+  };
+
+  // var housingTypeFilter = document.querySelector('#housing-type');
+
+  /* housingTypeFilter.addEventListener('change', function () {
+    var chosenType = propertyMap[housingTypeFilter.value];
+    updateAnnounsments(chosenType);
+  });
+
+  var updateAnnounsments = function () {
+    var sameTypeOfProperty = announcements.filter(function (announcement) {
+      // return announcement.offer.type === chosenType;
+    });
+    window.createPin(sameTypeOfProperty);
+  };*/
+
   var successHandler = function (announcements) {
+    // announcements = data;
     window.createPin(announcements);
+    // updateAnnounsments();
   };
 
   var errorHandler = function () {
     var similarErrorWindow = similarErrorTemplate.cloneNode(true); // клонируем шаблон
     main.appendChild(similarErrorWindow); // рисуем сообщение
     var errorButton = document.querySelector('.error__button');
-    window.page.deactivatePage();
+    deactivatePage();
     map.classList.add('map--faded');
     noticeForm.classList.add('ad-form--disabled');
     errorButton.addEventListener('click', closeErrorMessage); // закрывает окно с ошибкой по клику на кнопку
@@ -91,7 +131,10 @@
   };
 
   window.page = {
+    successHandler: successHandler,
+    errorHandler: errorHandler,
     deactivatePage: deactivatePage,
     activatePage: activatePage
   };
+
 })();
