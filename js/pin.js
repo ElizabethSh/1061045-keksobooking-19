@@ -60,7 +60,7 @@
       if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
         if (!evt.target.matches('img[alt="Метка объявления"]')) {
           window.createCard(announcement[evt.target.dataset.key]);
-          console.log(announcement[evt.target.dataset.key]);
+          // console.log(announcement[evt.target.dataset.key]);
           var mapPinActive = similarListElement.querySelector('.map__pin--active');
           if (mapPinActive) {
             mapPinActive.classList.remove('map__pin--active');
