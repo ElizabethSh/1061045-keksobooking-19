@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var MAIN_PIN_WIDTH = 65;
-  var MAIN_PIN_HEIGHT = document.querySelector('.map__pin--main').scrollHeight;
   var URL_GET = 'https://js.dump.academy/keksobooking/data';
   // var GET_POST = 'https://js.dump.academy/keksobooking';
 
@@ -15,14 +13,16 @@
   var noticeFieldsets = notice.querySelectorAll('fieldset');
 
   var addressField = noticeForm.querySelector('#address'); // находим поле адреса
-  var mapPinMainCoordinates = {// определяем координаты левого верхнего угла пина
+
+  // определяем координаты левого верхнего угла пина
+  var mapPinMainCoordinates = {
     x: mapPinMain.style.left.replace('px', ''),
     y: mapPinMain.style.top.replace('px', '')
   };
 
   // определяем координаты центра пина
-  var mapPinMainX = mapPinMainCoordinates.x * 1 + Math.round(MAIN_PIN_WIDTH / 2);
-  var mapPinMainY = mapPinMainCoordinates.y * 1 + Math.round(MAIN_PIN_WIDTH / 2);
+  var mapPinMainX = mapPinMainCoordinates.x * 1 + window.util.MAIN_PIN_RADIUS;
+  var mapPinMainY = mapPinMainCoordinates.y * 1 + window.util.MAIN_PIN_RADIUS;
   //
   var main = document.querySelector('main'); // куда клонируем
   var similarErrorTemplate = document.querySelector('#error') // нашли что клонировать
@@ -36,21 +36,26 @@
     noticeForm.classList.add('ad-form--disabled');
 
     // запоминаем начальные координаты пина до его перемещения
+
     mapPinMain.style.top = mapPinMainCoordinates.y + 'px';
+    mapPinMain.style.left = mapPinMainCoordinates.x + 'px';
+
     // при деактивайии координата Y меняется (центр метки)
-    mapPinMainY = mapPinMainCoordinates.y * 1 + Math.round(MAIN_PIN_WIDTH / 2);
+    mapPinMainY = mapPinMainCoordinates.y * 1 + window.util.MAIN_PIN_RADIUS;
+
     // подставляем координаты в поле адрес
     addressField.setAttribute('value', mapPinMainX + ', ' + mapPinMainY);
 
     mapFilter.querySelector('fieldset').setAttribute('disabled', '');
 
-    for (i = 0; i < mapFilterFields.length; i++) {
-      mapFilterFields[i].setAttribute('disabled', '');
-    }
+    mapFilterFields.forEach(function (it) {
+      it.setAttribute('disabled', '');
+    });
 
-    for (var i = 0; i < noticeFieldsets.length; i++) {
-      noticeFieldsets[i].setAttribute('disabled', '');
-    }
+    noticeFieldsets.forEach(function (it) {
+      it.setAttribute('disabled', '');
+    });
+    mapPinMain.addEventListener('mousedown', onPinMousedownPress);
   };
 
   deactivatePage();
@@ -61,25 +66,32 @@
     window.backend.load(URL_GET, successHandler, errorHandler);
 
     // при активации координата Y изменяется (указатель пина)
-    mapPinMainY = mapPinMainCoordinates.y * 1 + MAIN_PIN_HEIGHT;
+    mapPinMainY = mapPinMainCoordinates.y * 1 + window.util.MAIN_PIN_HEIGHT;
 
     map.classList.remove('map--faded');
-    for (var i = 0; i < mapFilterFields.length; i++) {
-      mapFilterFields[i].removeAttribute('disabled'); // убирает из фильтра объявлений с selectов disabled
-    }
-    mapFilter.querySelector('fieldset').removeAttribute('disabled'); // убирает из фильтра объявлений с fieldsetов disabled
-    noticeForm.classList.remove('ad-form--disabled'); // убирает disabled с формы
-    for (i = 0; i < noticeFieldsets.length; i++) {
-      noticeFieldsets[i].removeAttribute('disabled'); // убирает из объявлений с selectов disabled
-    }
+
+    mapFilter.querySelector('fieldset').removeAttribute('disabled'); // убирает из фильтра объявлений с fieldsetа disabled
+    mapFilterFields.forEach(function (it) {
+      it.removeAttribute('disabled'); // убирает из фильтра объявлений с selectов disabled
+    });
+
+    noticeForm.classList.remove('ad-form--disabled'); // убирает disabled с формы подачи объявления
+    noticeFieldsets.forEach(function (it) {
+      it.removeAttribute('disabled'); // убирает из объявлений с selectов disabled
+    });
     // window.createPin(); // создает пины на карте
     addressField.setAttribute('value', mapPinMainX + ', ' + mapPinMainY); // при активации страницы меняет координату в поле адрес
-    // console.log(mapPinMainX);
+
+    mapPinMain.removeEventListener('mousedown', onPinMousedownPress);
   };
 
-  mapPinMain.addEventListener('mousedown', function () {
+  // функция активации страницы по mousedown на пин
+  var onPinMousedownPress = function () {
     window.util.isMouseLeftEvent(activatePage);
-  });
+  };
+
+  // при нажатии на пин вызывает функцию onPinMousedownPress
+  mapPinMain.addEventListener('mousedown', onPinMousedownPress);
 
   mapPinMain.addEventListener('keydown', function (evt) {
     window.util.isEnterEvent(evt, activatePage);
