@@ -34,6 +34,27 @@
     for (var k = 0; k < takeNumber; k++) {
       similarListElement.appendChild(renderPin(data[k]));
     }
+
+    var onPinPress = function (evt) {
+      if (evt.target && evt.target.dataset.key) {
+        var mapCard = document.querySelector('.map__card');
+        if (mapCard) {
+          mapCard.remove();
+        }
+      }
+
+      if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
+        if (!evt.target.matches('img[alt="Метка объявления"]')) {
+          window.createCard(data[evt.target.dataset.key]);
+          if (evt.target.matches('img')) {
+            evt.target.parentNode.classList.add('map__pin--main');
+          } else {
+            evt.target.classList.add('map__pin--main');
+          }
+        }
+      }
+    };
+    similarListElement.addEventListener('click', onPinPress);
     // similarListElement.appendChild(fragment);
     /* var pins = similarListElement.querySelectorAll('button[type="button"]');
     pins.addEventListener('click', function () {
@@ -43,20 +64,6 @@
     // window.createCard();
   };
 
-  var onPinPress = function (evt) {
-    var mapCard = document.querySelector('.map__card');
-    if (mapCard) {
-      mapCard.remove();
-    }
-
-    if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
-      if (!evt.target.matches('img[alt="Метка объявления"]')) {
-        window.createCard();
-      }
-    }
-  };
-
-  similarListElement.addEventListener('click', onPinPress);
 
   // перемещение главного пина на карте
 
