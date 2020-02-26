@@ -141,6 +141,4 @@
     });
     document.addEventListener('keydown', onCardEscPress);
   };
-
-  window.createCard(); // вызов функции, чтобы проверить отрисовку карточки
 })();
