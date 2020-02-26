@@ -4,13 +4,17 @@
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
 
+  // проверить нужен ли модуль data.js !!!
+  var X_MAX = 1200;
+  var Y_MIN = 130;
+  var Y_MAX = 630;
+
   var map = document.querySelector('.map');
   var similarListElement = map.querySelector('.map__pins');
   var similarAnnouncementTemplate = document.querySelector('#pin')
         .content
         .querySelector('button');
   var addressField = document.querySelector('#address');
-  // console.log(addressField);
 
   var renderPin = function (announcement) {
     var announcementElement = similarAnnouncementTemplate.cloneNode(true);
@@ -31,7 +35,28 @@
       similarListElement.appendChild(renderPin(data[k]));
     }
     // similarListElement.appendChild(fragment);
+    /* var pins = similarListElement.querySelectorAll('button[type="button"]');
+    pins.addEventListener('click', function () {
+      console.log(pins);
+    });*/
+
+    // window.createCard();
   };
+
+  var onPinPress = function (evt) {
+    var mapCard = document.querySelector('.map__card');
+    if (mapCard) {
+      mapCard.remove();
+    }
+
+    if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
+      if (!evt.target.matches('img[alt="Метка объявления"]')) {
+        window.createCard();
+      }
+    }
+  };
+
+  similarListElement.addEventListener('click', onPinPress);
 
   // перемещение главного пина на карте
 
@@ -43,7 +68,6 @@
       x: evt.clientX,
       y: evt.clientY
     };
-
 
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
@@ -58,18 +82,29 @@
         y: moveEvt.clientY
       };
 
-      addressField.setAttribute('value', (mainPinHandler.offsetTop) + ', ' + mainPinHandler.offsetLeft);
+      addressField.setAttribute('value', mainPinHandler.offsetLeft + window.util.MAIN_PIN_RADIUS + ', ' + (mainPinHandler.offsetTop + window.util.MAIN_PIN_HEIGHT));
 
-      mainPinHandler.style.top = (mainPinHandler.offsetTop - shift.y) + 'px';
-      mainPinHandler.style.left = (mainPinHandler.offsetLeft - shift.x) + 'px';
+      if ((mainPinHandler.offsetTop - shift.y) < Y_MIN - window.util.MAIN_PIN_HEIGHT) {
+        mainPinHandler.style.top = '49 px';
+      } else if ((mainPinHandler.offsetTop - shift.y) > Y_MAX - window.util.MAIN_PIN_HEIGHT) {
+        mainPinHandler.style.top = '549px';
+      } else {
+        mainPinHandler.style.top = (mainPinHandler.offsetTop - shift.y) + 'px';
+      }
 
-      // console.log(mainPinHandler.offsetTop);
+      if ((mainPinHandler.offsetLeft - shift.x) < -33) {
+        mainPinHandler.style.left = '-33px';
+      } else if ((mainPinHandler.offsetLeft - shift.x) > X_MAX - window.util.MAIN_PIN_RADIUS) {
+        mainPinHandler.style.left = (X_MAX - 33 - mainPinHandler.style.height) + 'px';
+      } else {
+        mainPinHandler.style.left = (mainPinHandler.offsetLeft - shift.x) + 'px';
+      }
 
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      addressField.setAttribute('value', (mainPinHandler.offsetTop) + ', ' + mainPinHandler.offsetLeft);
+
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
