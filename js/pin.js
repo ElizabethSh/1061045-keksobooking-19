@@ -16,23 +16,25 @@
         .querySelector('button');
   var addressField = document.querySelector('#address');
 
-  var renderPin = function (announcement) {
+  var renderPin = function (announcement, index) {
     var announcementElement = similarAnnouncementTemplate.cloneNode(true);
 
     announcementElement.style.left = announcement.location.x + PIN_WIDTH / 2 + 'px';
     announcementElement.style.top = announcement.location.y + PIN_HEIGHT + 'px';
     announcementElement.querySelector('img').setAttribute('src', announcement.author.avatar);
     announcementElement.querySelector('img').setAttribute('alt', announcement.offer.title);
+    announcementElement.querySelector('img').setAttribute('dataset.key', announcement, index);
+    announcementElement.setAttribute('dataset.key', announcement, index);
 
     return announcementElement;
   };
 
-  window.createPin = function (data) {
-    var takeNumber = data.length > 5 ? 5 : data.length; // выводить не больше 5 элементов
+  window.createPin = function (announcement) {
+    var takeNumber = announcement.length > 5 ? 5 : announcement.length; // выводить не больше 5 элементов
     // var fragment = document.createDocumentFragment();
     window.removePins();
     for (var k = 0; k < takeNumber; k++) {
-      similarListElement.appendChild(renderPin(data[k]));
+      similarListElement.appendChild(renderPin(announcement[k]));
     }
 
     var onPinPress = function (evt) {
@@ -42,14 +44,32 @@
           mapCard.remove();
         }
       }
+      /* var mapCard = document.querySelector('.map__card');
+        if (mapCard) {
+          mapCard.remove();
+        }*/
+
+      // var pins = similarListElement.querySelectorAll('button[type="button"]');
+
+      /* var pikedPins = Array.from(pins).filter(function (it) {
+        return it.classList.contains('map__pin--main');
+      });
+
+      console.log(pikedPins);*/
 
       if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
         if (!evt.target.matches('img[alt="Метка объявления"]')) {
-          window.createCard(data[evt.target.dataset.key]);
+          window.createCard(announcement[evt.target.dataset.key]);
+          console.log(announcement[evt.target.dataset.key]);
+          var mapPinActive = similarListElement.querySelector('.map__pin--active');
+          if (mapPinActive) {
+            mapPinActive.classList.remove('map__pin--active');
+          }
+
           if (evt.target.matches('img')) {
-            evt.target.parentNode.classList.add('map__pin--main');
+            evt.target.parentNode.classList.add('map__pin--active');
           } else {
-            evt.target.classList.add('map__pin--main');
+            evt.target.classList.add('map__pin--active');
           }
         }
       }
