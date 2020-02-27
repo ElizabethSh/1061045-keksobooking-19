@@ -52,12 +52,13 @@
   // отрисовка фото
 
   var renderPhotos = function (photo) {
-    var newElement = document.createElement('img');
-    newElement.className = 'popup__photo';
-    newElement.setAttribute('src', photo);
-    newElement.setAttribute('width', '45');
-    newElement.setAttribute('height', '40');
-    return newElement;
+    var newElementImg = document.createElement('img');
+    newElementImg.className = 'popup__photo';
+    newElementImg.setAttribute('src', photo);
+    newElementImg.setAttribute('width', '45');
+    newElementImg.setAttribute('height', '40');
+    newElementImg.setAttribute('alt', 'Фото объекта размещения');
+    return newElementImg;
   };
 
 
@@ -75,9 +76,9 @@
   // отрисовка удобств
 
   var renderFeatures = function (feature) {
-    var newElement = document.createElement('li');
-    newElement.className = 'popup__feature ' + featuresClassMap[feature];
-    return newElement;
+    var newElementFeature = document.createElement('li');
+    newElementFeature.className = 'popup__feature ' + featuresClassMap[feature];
+    return newElementFeature;
   };
 
   renderFeatures(announcement.offer.features[0]);
@@ -101,6 +102,7 @@
   var renderCard = function () {
     var cardElement = similarCardTemplate.cloneNode(true);
 
+    cardElement.querySelector('.popup__avatar').setAttribute('src', announcement.author.avatar);
     cardElement.querySelector('.popup__title').textContent = announcement.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = announcement.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = announcement.offer.price + ' ₽/ночь';
@@ -108,7 +110,6 @@
     cardElement.querySelector('.popup__text--capacity').textContent = announcement.offer.rooms + ' комнаты для ' + announcement.offer.guests + ' гостей';
     cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + announcement.offer.checkin + ', ' + 'выезд до ' + announcement.offer.checkout;
     cardElement.querySelector('.popup__description').textContent = announcement.offer.description;
-    cardElement.querySelector('.popup__avatar').setAttribute('src', announcement.author.avatar);
 
     return cardElement;
   };
