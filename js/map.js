@@ -16,7 +16,7 @@
   window.createPin = function (data) {
     var takeNumber = data.length > PIN_AMOUNT_MAX ? PIN_AMOUNT_MAX : data.length; // выводить не больше 5 элементов
     // var fragment = document.createDocumentFragment();
-    window.removePins();
+    window.form.removePins();
     for (var k = 0; k < takeNumber; k++) {
       mapPinsList.appendChild(window.pin.renderPin(data[k], k));
     }
