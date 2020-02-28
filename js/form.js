@@ -4,9 +4,23 @@
   var noticeForm = document.querySelector('.ad-form');
   var roomNumber = noticeForm.querySelector('#room_number');
   var capacity = noticeForm.querySelector('#capacity');
+
   var similarSuccessWindow = document.querySelector('#success').
                             content.querySelector('div');
+
   var main = document.querySelector('main'); // куда клонируем
+  var timeIn = noticeForm.querySelector('#timein');
+  var timeOut = noticeForm.querySelector('#timeout');
+  var propertyType = noticeForm.querySelector('#type');
+  var price = noticeForm.querySelector('#price');
+  var similarListElement = document.querySelector('.map__pins');
+
+  var priceOfPropertyMap = {
+    bungalo: 0,
+    flat: 1000,
+    house: 5000,
+    palace: 10000
+  };
 
   // соответствие полей кол-во комнат и кол-во гостей
 
@@ -34,9 +48,6 @@
 
   // время заезда и выезда
 
-  var timeIn = noticeForm.querySelector('#timein');
-  var timeOut = noticeForm.querySelector('#timeout');
-
   timeIn.addEventListener('change', function () {
     timeOut.value = timeIn.value;
   });
@@ -47,15 +58,6 @@
 
   // соответствие типа жилья и минимальной цены
 
-  var propertyType = noticeForm.querySelector('#type');
-  var price = noticeForm.querySelector('#price');
-  var priceOfPropertyMap = {
-    bungalo: 0,
-    flat: 1000,
-    house: 5000,
-    palace: 10000
-  };
-
   var onPropertyTypeChange = function () {
     price.placeholder = priceOfPropertyMap[propertyType.value];
     price.setAttribute('min', priceOfPropertyMap[propertyType.value]);
@@ -65,17 +67,15 @@
     onPropertyTypeChange();
   });
 
-  // отправка формы
+  var closeSuccessWindow = function () {
+    window.util.removeElement('.success');
+    noticeForm.reset();
+    document.removeEventListener('keydown', onSuccessWindowEscPress);
+  };
 
-  // var map = document.querySelector('.map');
-
-  /* var removePins = function () {
-    var otherPins = [];
-    otherPins = similarListElement.querySelectorAll('button[type="button"]');
-    otherPins.forEach(function (it) {
-      it.remove();
-    });
-  };*/
+  var onSuccessWindowEscPress = function (evt) {
+    window.util.isEscapeEvent(evt, closeSuccessWindow);
+  };
 
   noticeForm.addEventListener('submit', function (evt) {
     window.backend.send(new FormData(noticeForm), function () {
@@ -83,20 +83,14 @@
       var windowSuccess = similarSuccessWindow.cloneNode(true);
       main.appendChild(windowSuccess);
       main.querySelector('.success').addEventListener('click', function () {
-        window.util.removeElement('.success');
-        noticeForm.reset();
+        closeSuccessWindow();
       });
-      document.addEventListener('keydown', function (evtEsc) {
-        window.util.isEscapeEvent(evtEsc, window.util.removeElement('.success'));
-        noticeForm.reset();
-      });
+      document.addEventListener('keydown', onSuccessWindowEscPress);
     }, window.page.errorHandler);
     evt.preventDefault();
   });
 
-  var similarListElement = document.querySelector('.map__pins');
-
-  window.removePins = function () {
+  var removePins = function () {
     var pins = [];
     pins = similarListElement.querySelectorAll('button[type="button"]');
     pins.forEach(function (it) {
@@ -115,6 +109,10 @@
     noticeForm.reset();
     window.page.deactivatePage();
     removeCard();
-    window.removePins();
+    window.form.removePins();
   });
+
+  window.form = {
+    removePins: removePins,
+  };
 })();
