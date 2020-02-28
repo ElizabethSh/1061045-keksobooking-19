@@ -6,33 +6,6 @@
                             .content.querySelector('.map__card');
   var mapFiltersContainer = document.querySelector('.map__filters-container'); // элемент, перед которым вставляем карточку
 
-  var announcement = {
-    author: {
-      avatar: 'img/avatars/user02.png'
-    },
-
-    offer: {
-      title: 'Маленькая квартирка рядом с парком',
-      address: '102-0075 Tōkyō-to, Chiyoda-ku, Sanbanchō',
-      price: 30000,
-      type: 'house',
-      rooms: 1,
-      guests: 1,
-      checkin: '9:00',
-      checkout: '7:00',
-      features: ['wifi', 'parking', 'washer', 'elevator', 'conditioner'],
-      description: 'Маленькая чистая квратира на краю парка. Без интернета, регистрации и СМС.',
-      photos: [
-        'https://cdn.ostrovok.ru/t/x500/mec/hotels/5000000/4500000/4493700/4493658/4493658_17_b.jpg',
-        'https://cdn.ostrovok.ru/t/x500/carsolize/images/hotels/23e332cb-1379-4582-85ac-901d6c441635.jpeg',
-      ],
-    },
-    location: {
-      x: 471,
-      y: 545
-    }
-  };
-
   var propertyMap = {
     'flat': 'Квартира',
     'bungalo': 'Бунгало',
@@ -49,12 +22,12 @@
     'elevator': 'popup__feature--elevator',
     'conditioner': 'popup__feature--conditioner'
   };
-  // отрисовка фото
 
-  var renderPhotos = function (photo) {
+  // отрисовка фото
+  var renderPhotos = function (pathToPhoto) {
     var newElementImg = document.createElement('img');
     newElementImg.className = 'popup__photo';
-    newElementImg.setAttribute('src', photo);
+    newElementImg.setAttribute('src', pathToPhoto);
     newElementImg.setAttribute('width', '45');
     newElementImg.setAttribute('height', '40');
     newElementImg.setAttribute('alt', 'Фото объекта размещения');
@@ -62,18 +35,19 @@
   };
 
 
-  var createPhotos = function (array) {
-    var popupPhotos = document.querySelector('.popup__photos');
-    document.querySelector('.popup__photo').remove();
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < announcement.offer.photos.length; i++) {
+  var createPhotos = function (arrayOfPhotos) {
+    var popupPhotos = document.querySelector('.popup__photos'); // конейнер с фотками
+    document.querySelector('.popup__photo').remove(); // удали img, которое есть
+    var fragment = document.createDocumentFragment(); // создай новый img c нужными атрибутами
 
-      fragment.appendChild(renderPhotos(array[i]));
-    }
+    arrayOfPhotos.forEach(function (it) {
+      fragment.appendChild(renderPhotos(it));
+    });
+
     popupPhotos.appendChild(fragment);
   };
 
-  // отрисовка удобств
+  // создаем элемент li списка удобств
 
   var renderFeatures = function (feature) {
     var newElementFeature = document.createElement('li');
@@ -81,25 +55,23 @@
     return newElementFeature;
   };
 
-  renderFeatures(announcement.offer.features[0]);
+  // создаем список удобств
 
-  var createFutures = function (array) {
-    var popupFeaturesList = document.querySelector('.popup__features');
-    var features = document.querySelectorAll('.popup__feature');
-    features.forEach(function (feature) {
+  var createFutures = function (arrayOfFeatures) {
+    var popupFeaturesList = document.querySelector('.popup__features'); // существующий в шаблоне списое удобств
+    var features = document.querySelectorAll('.popup__feature'); // находим все элементы li этого списка
+    features.forEach(function (feature) { // удаляем их все
       feature.remove();
     });
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < announcement.offer.features.length; i++) {
-
-      fragment.appendChild(renderFeatures(array[i]));
-    }
+    var fragment = document.createDocumentFragment(); // создаем новые элементы li в зависимости от содержания передаваемого массива
+    arrayOfFeatures.forEach(function (it) { // для каждому новому li добавляем класс для отображения соответствующего удобства
+      fragment.appendChild(renderFeatures(it));
+    });
     popupFeaturesList.appendChild(fragment);
   };
 
   // код для создания и заполнения карточек
-
-  var renderCard = function () {
+  var renderCard = function (announcement) {
     var cardElement = similarCardTemplate.cloneNode(true);
 
     cardElement.querySelector('.popup__avatar').setAttribute('src', announcement.author.avatar);
@@ -114,7 +86,26 @@
     return cardElement;
   };
 
-  // если произошло нажатие по esc вызывает функцию removeCard
+  // рисует карточку объявления
+
+  var createCard = function (annIndex) {
+    var announcements = window.announcements;
+
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(renderCard(announcements[annIndex])); // создаем карточку
+
+    map.insertBefore(fragment, mapFiltersContainer);
+
+    createPhotos(window.announcements[annIndex].offer.photos); // добавляем фото объекта размещения
+    createFutures(window.announcements[annIndex].offer.features); // добавляем доступные удобства*/
+    var popupCloseButton = document.querySelector('.popup__close');
+    popupCloseButton.addEventListener('click', function () {
+      window.util.closePopup('.map__card');
+    });
+    document.addEventListener('keydown', onCardEscPress);
+  };
+
+  // если произошло нажатие по esc вызывает функцию closeCard
 
   var onCardEscPress = function (evt) {
     window.util.isEscapeEvent(evt, closeCard);
@@ -127,19 +118,8 @@
     document.removeEventListener('keydown', onCardEscPress);
   };
 
-  // рисует карточку объявления
-
-  window.createCard = function () {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(renderCard(announcement)); // создаем карточку
-
-    map.insertBefore(fragment, mapFiltersContainer);
-    createPhotos(announcement.offer.photos); // добавляем фото объекта размещения
-    createFutures(announcement.offer.features); // добавляем доступные удобства
-    var popupCloseButton = document.querySelector('.popup__close');
-    popupCloseButton.addEventListener('click', function () {
-      window.util.closePopup('.map__card');
-    });
-    document.addEventListener('keydown', onCardEscPress);
+  window.card = {
+    createCard: createCard
   };
+
 })();
