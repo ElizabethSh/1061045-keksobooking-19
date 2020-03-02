@@ -13,7 +13,6 @@
   var timeOut = noticeForm.querySelector('#timeout');
   var propertyType = noticeForm.querySelector('#type');
   var price = noticeForm.querySelector('#price');
-  var similarListElement = document.querySelector('.map__pins');
 
   var priceOfPropertyMap = {
     bungalo: 0,
@@ -79,7 +78,7 @@
 
   noticeForm.addEventListener('submit', function (evt) {
     window.backend.send(new FormData(noticeForm), function () {
-      window.page.deactivatePage();
+      window.page.deactivate();
       var windowSuccess = similarSuccessWindow.cloneNode(true);
       main.appendChild(windowSuccess);
       main.querySelector('.success').addEventListener('click', function () {
@@ -90,29 +89,10 @@
     evt.preventDefault();
   });
 
-  var removePins = function () {
-    var pins = [];
-    pins = similarListElement.querySelectorAll('button[type="button"]');
-    pins.forEach(function (it) {
-      it.remove();
-    });
-  };
-
-  var removeCard = function () {
-    var mapCard = document.querySelector('.map__card');
-    if (mapCard) {
-      mapCard.remove();
-    }
-  };
-
   noticeForm.addEventListener('reset', function () {
     noticeForm.reset();
-    window.page.deactivatePage();
-    removeCard();
-    window.form.removePins();
+    window.page.deactivate();
+    window.card.remove();
+    window.pin.remove();
   });
-
-  window.form = {
-    removePins: removePins,
-  };
 })();
