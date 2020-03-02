@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var PIN_AMOUNT_MAX = 5;
   // проверить нужен ли модуль data.js !!!
   var X_MAX = 1200;
   var Y_MIN = 130;
@@ -11,42 +10,29 @@
   var mapPinsList = map.querySelector('.map__pins');
   var addressField = document.querySelector('#address');
 
-  // Функция создания пинов на карте
+  // функция удаления карточки, чтобы всегда открыта была талько одна
+  var onPinPress = function (evt) {
+    window.card.remove();
 
-  window.createPin = function (data) {
-    var takeNumber = data.length > PIN_AMOUNT_MAX ? PIN_AMOUNT_MAX : data.length; // выводить не больше 5 элементов
-    // var fragment = document.createDocumentFragment();
-    window.form.removePins();
-    for (var k = 0; k < takeNumber; k++) {
-      mapPinsList.appendChild(window.pin.renderPin(data[k], k));
-    }
+    // По нажатию на пин объявлений создаем соответствующую ему карточку
+    if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
+      if (!evt.target.matches('img[alt="Метка объявления"]')) {
+        window.card.create(window.announcements, evt.target.getAttribute('key'));
+        var mapPinActive = mapPinsList.querySelector('.map__pin--active');
+        if (mapPinActive) {
+          mapPinActive.classList.remove('map__pin--active');
+        }
 
-    // функция удаления карточки, чтобы всегда открыта была талько одна
-    var onPinPress = function (evt) {
-      var mapCard = document.querySelector('.map__card');
-      if (mapCard) {
-        mapCard.remove();
-      }
-
-      // По нажатию на пин объявлений создаем соответствующую ему карточку
-      if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
-        if (!evt.target.matches('img[alt="Метка объявления"]')) {
-          window.card.createCard(evt.target.getAttribute('key'));
-          var mapPinActive = mapPinsList.querySelector('.map__pin--active');
-          if (mapPinActive) {
-            mapPinActive.classList.remove('map__pin--active');
-          }
-
-          if (evt.target.matches('img')) {
-            evt.target.parentNode.classList.add('map__pin--active');
-          } else {
-            evt.target.classList.add('map__pin--active');
-          }
+        if (evt.target.matches('img')) {
+          evt.target.parentNode.classList.add('map__pin--active');
+        } else {
+          evt.target.classList.add('map__pin--active');
         }
       }
-    };
-    mapPinsList.addEventListener('click', onPinPress);
+    }
   };
+
+  mapPinsList.addEventListener('click', onPinPress);
 
   // перемещение главного пина на карте
 
@@ -107,5 +93,8 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
+  /* window.map = {
+    onPinPress: onPinPress
+  };*/
 
 })();
