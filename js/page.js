@@ -26,11 +26,11 @@
   var similarErrorTemplate = document.querySelector('#error') // нашли что клонировать
                              .content
                              .querySelector('div');
-
+  var mapPinsList = map.querySelector('.map__pins');
 
   // Функция перевода страницы в неактивное состояние
 
-  var deactivatePage = function () {
+  var deactivate = function () {
     map.classList.add('map--faded');
     noticeForm.classList.add('ad-form--disabled');
 
@@ -57,11 +57,11 @@
     mapPinMain.addEventListener('mousedown', onPinMousedownPress);
   };
 
-  deactivatePage();
+  deactivate();
 
   // Переводит страницу в активное состояние
 
-  var activatePage = function () {
+  var activate = function () {
     window.backend.load(URL_GET, successHandler, errorHandler);
 
     // при активации координата Y изменяется (указатель пина)
@@ -86,21 +86,64 @@
 
   // функция активации страницы по mousedown на пин
   var onPinMousedownPress = function () {
-    window.util.isMouseLeftEvent(activatePage);
+    window.util.isMouseLeftEvent(activate);
   };
 
   // при нажатии на пин вызывает функцию onPinMousedownPress
   mapPinMain.addEventListener('mousedown', onPinMousedownPress);
 
   mapPinMain.addEventListener('keydown', function (evt) {
-    window.util.isEnterEvent(evt, activatePage);
+    window.util.isEnterEvent(evt, activate);
   });
 
-  // функция успешной загрузки данных
+  var housingType = map.querySelector('#housing-type');
+  var housingPrice = map.querySelector('#housing-price');
+  var propertyChoice;
+  var priceChoice;
 
+  mapFilter.addEventListener('change', function () {
+    window.card.remove();
+    propertyChoice = housingType.value;
+    priceChoice = housingPrice.value;
+    updateData();
+  });
+
+
+  var updateData = function () {
+
+    var pins = [];
+
+    var sameProperty = window.announcements.filter(function (it) {
+      return it.offer.type === propertyChoice;
+    });
+
+    if (propertyChoice === 'any') {
+      pins = window.announcements;
+      window.pin.create(pins);
+    } else {
+      pins = sameProperty;
+      window.pin.create(pins);
+    }
+
+    mapPinsList.addEventListener('click', function (evt) {
+      window.card.remove();
+      if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
+        if (!evt.target.matches('img[alt="Метка объявления"]')) {
+          window.card.create(pins, evt.target.getAttribute('key'));
+          /* if (propertyChoice === 'any') {
+            window.card.create(window.announcements, evt.target.getAttribute('key'));
+          } else {
+            window.card.create(sameProperty, evt.target.getAttribute('key'));
+          } */
+        }
+      }
+    });
+  };
+
+  // функция успешной загрузки данных
   var successHandler = function (data) {
-    window.announcements = data;
-    window.createPin(window.announcements);
+    window.announcements = data; // сохраняем загруженные данные в перем. announcements
+    window.pin.create(window.announcements);
   };
 
   // функция закрытия окна ошибки
@@ -116,7 +159,7 @@
     var similarErrorWindow = similarErrorTemplate.cloneNode(true); // клонируем шаблон
     main.appendChild(similarErrorWindow); // рисуем сообщение
     var errorButton = document.querySelector('.error__button');
-    deactivatePage();
+    deactivate();
     errorButton.addEventListener('click', closeErrorMessage); // закрывает окно с ошибкой по клику на кнопку
     document.querySelector('.error').addEventListener('click', closeErrorMessage);
     errorButton.addEventListener('keydown', function (evt) { // закрывает окно с ошибкой по Enter на кнопку
@@ -130,8 +173,8 @@
   window.page = {
     successHandler: successHandler,
     errorHandler: errorHandler,
-    deactivatePage: deactivatePage,
-    activatePage: activatePage,
+    deactivate: deactivate,
+    activate: activate,
   };
 
 })();
