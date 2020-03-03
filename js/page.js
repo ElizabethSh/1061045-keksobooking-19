@@ -96,45 +96,56 @@
     window.util.isEnterEvent(evt, activate);
   });
 
-  var housingType = map.querySelector('#housing-type');
-  var housingPrice = map.querySelector('#housing-price');
+  var housingType = mapFilter.querySelector('#housing-type');
+  var housingPrice = mapFilter.querySelector('#housing-price');
+  var housingRoom = mapFilter.querySelector('#housing-rooms');
+  var housingGuests = mapFilter.querySelector('#housing-guests');
+  // var allfeatures = mapFilter.querySelectorAll('input[type="checkbox"]:checked');
+
   var propertyChoice;
   var priceChoice;
+  var roomChoice;
+  var guestChoice;
 
   mapFilter.addEventListener('change', function () {
     window.card.remove();
     propertyChoice = housingType.value;
     priceChoice = housingPrice.value;
-    updateData();
+    roomChoice = parseInt(housingRoom.value, 10);
+    guestChoice = parseInt(housingGuests.value, 10);
+
+    window.debounce(updateData);
   });
 
 
   var updateData = function () {
+    var filteredData = [];
+    window.announcements.forEach(function (it) {
+      if (it.offer.price >= 10000 && it.offer.price <= 50000) {
+        var chosenPrise = 'middle';
+      } else if (it.offer.price < 10000) {
+        chosenPrise = 'low';
+      } else if (it.offer.price > 50000) {
+        chosenPrise = 'high';
+      } else {
+        chosenPrise = 'any';
+      }
 
-    var pins = [];
-
-    var sameProperty = window.announcements.filter(function (it) {
-      return it.offer.type === propertyChoice;
+      if ((it.offer.type === propertyChoice || housingType.value === 'any') &&
+      (it.offer.rooms === roomChoice || housingRoom.value === 'any') &&
+      (it.offer.guests === guestChoice || housingGuests.value === 'any') &&
+      (chosenPrise === priceChoice || housingPrice.value === 'any')) {
+        filteredData.push(it);
+      }
     });
 
-    if (propertyChoice === 'any') {
-      pins = window.announcements;
-      window.pin.create(pins);
-    } else {
-      pins = sameProperty;
-      window.pin.create(pins);
-    }
+    window.pin.create(filteredData);
 
     mapPinsList.addEventListener('click', function (evt) {
       window.card.remove();
       if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
         if (!evt.target.matches('img[alt="Метка объявления"]')) {
-          window.card.create(pins, evt.target.getAttribute('key'));
-          /* if (propertyChoice === 'any') {
-            window.card.create(window.announcements, evt.target.getAttribute('key'));
-          } else {
-            window.card.create(sameProperty, evt.target.getAttribute('key'));
-          } */
+          window.card.create(filteredData, evt.target.getAttribute('key'));
         }
       }
     });
