@@ -26,7 +26,7 @@
   var similarErrorTemplate = document.querySelector('#error') // нашли что клонировать
                              .content
                              .querySelector('div');
-  var mapPinsList = map.querySelector('.map__pins');
+
 
   // Функция перевода страницы в неактивное состояние
 
@@ -100,7 +100,6 @@
   var housingPrice = mapFilter.querySelector('#housing-price');
   var housingRoom = mapFilter.querySelector('#housing-rooms');
   var housingGuests = mapFilter.querySelector('#housing-guests');
-  // var allfeatures = mapFilter.querySelectorAll('input[type="checkbox"]:checked');
 
   var propertyChoice;
   var priceChoice;
@@ -108,6 +107,7 @@
   var guestChoice;
 
   mapFilter.addEventListener('change', function () {
+
     window.card.remove();
     propertyChoice = housingType.value;
     priceChoice = housingPrice.value;
@@ -120,7 +120,18 @@
 
   var updateData = function () {
     var filteredData = [];
-    window.announcements.forEach(function (it) {
+
+    // получаем массив выбранных удобств
+    var pickedFeatures = [];
+    var inputFeaturesChecked = mapFilter.querySelectorAll('input[type="checkbox"]:checked');
+
+    inputFeaturesChecked.forEach(function (it) {
+      pickedFeatures.push(it.value);
+    });
+
+    // определение соответствия категории цены
+    for (var i = 0; i < window.util.announcements.length; i++) {
+      var it = window.util.announcements[i];
       if (it.offer.price >= 10000 && it.offer.price <= 50000) {
         var chosenPrise = 'middle';
       } else if (it.offer.price < 10000) {
@@ -131,30 +142,38 @@
         chosenPrise = 'any';
       }
 
+      // функция определения, есть ли в объявленях выбранное удобство
+
+      var isFeature = function () {
+        var pikedFeature = true;
+        for (var j = 0; j < pickedFeatures.length; j++) {
+          var isAddToFilteredData = it.offer.features.includes(pickedFeatures[j]);
+          if (!isAddToFilteredData) {
+            pikedFeature = false;
+            break;
+          }
+        }
+        return pikedFeature;
+      };
+
       if ((it.offer.type === propertyChoice || housingType.value === 'any') &&
       (it.offer.rooms === roomChoice || housingRoom.value === 'any') &&
       (it.offer.guests === guestChoice || housingGuests.value === 'any') &&
-      (chosenPrise === priceChoice || housingPrice.value === 'any')) {
-        filteredData.push(it);
+      (chosenPrise === priceChoice || housingPrice.value === 'any') && (isFeature())) {
+        filteredData.push(i);
       }
-    });
+    }
 
     window.pin.create(filteredData);
-
-    mapPinsList.addEventListener('click', function (evt) {
-      window.card.remove();
-      if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
-        if (!evt.target.matches('img[alt="Метка объявления"]')) {
-          window.card.create(filteredData, evt.target.getAttribute('key'));
-        }
-      }
-    });
   };
 
   // функция успешной загрузки данных
   var successHandler = function (data) {
-    window.announcements = data; // сохраняем загруженные данные в перем. announcements
-    window.pin.create(window.announcements);
+    window.util.announcements = data; // сохраняем загруженные данные в перем. announcements
+    for (var k = 0; k < window.util.announcements.length; k++) {
+      window.util.filteredData.push(k);
+    }
+    window.pin.create(window.util.filteredData);
   };
 
   // функция закрытия окна ошибки
