@@ -10,14 +10,13 @@
   var mapPinsList = map.querySelector('.map__pins');
   var addressField = document.querySelector('#address');
 
-  // функция удаления карточки, чтобы всегда открыта была талько одна
   var onPinPress = function (evt) {
-    window.card.remove();
+    window.card.remove(); // функция удаления карточки, чтобы всегда открыта была талько одна
 
     // По нажатию на пин объявлений создаем соответствующую ему карточку
     if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
       if (!evt.target.matches('img[alt="Метка объявления"]')) {
-        window.card.create(window.announcements, evt.target.getAttribute('key'));
+        window.card.create(evt.target.getAttribute('key'));
         var mapPinActive = mapPinsList.querySelector('.map__pin--active');
         if (mapPinActive) {
           mapPinActive.classList.remove('map__pin--active');
@@ -65,18 +64,18 @@
 
       addressField.setAttribute('value', mainPinHandler.offsetLeft + window.util.MAIN_PIN_RADIUS + ', ' + (mainPinHandler.offsetTop + window.util.MAIN_PIN_HEIGHT));
 
-      if (currentCoords.x < -33) {
-        mainPinHandler.style.left = '-33px';
+      if (currentCoords.x < 0 - window.util.MAIN_PIN_RADIUS) {
+        mainPinHandler.style.left = 0 - window.util.MAIN_PIN_RADIUS;
       } else if (currentCoords.x > X_MAX - window.util.MAIN_PIN_RADIUS) {
-        mainPinHandler.style.left = (X_MAX - 33 - mainPinHandler.style.height) + 'px';
+        mainPinHandler.style.left = (X_MAX - window.util.MAIN_PIN_RADIUS - mainPinHandler.style.height) + 'px';
       } else {
         mainPinHandler.style.left = currentCoords.x + 'px';
       }
 
       if (currentCoords.y < Y_MIN - window.util.MAIN_PIN_HEIGHT) {
-        mainPinHandler.style.top = '49 px';
+        mainPinHandler.style.top = Y_MIN - window.util.MAIN_PIN_HEIGHT;
       } else if (currentCoords.y > Y_MAX - window.util.MAIN_PIN_HEIGHT) {
-        mainPinHandler.style.top = '549px';
+        mainPinHandler.style.top = Y_MAX - window.util.MAIN_PIN_HEIGHT;
       } else {
         mainPinHandler.style.top = currentCoords.y + 'px';
       }
