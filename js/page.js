@@ -85,8 +85,8 @@
   };
 
   // функция активации страницы по mousedown на пин
-  var onPinMousedownPress = function () {
-    window.util.isMouseLeftEvent(activate);
+  var onPinMousedownPress = function (evt) {
+    window.util.isMouseLeftEvent(evt, activate);
   };
 
   // при нажатии на пин вызывает функцию onPinMousedownPress
@@ -171,7 +171,10 @@
   var successHandler = function (data) {
     window.util.announcements = data; // сохраняем загруженные данные в перем. announcements
     for (var k = 0; k < window.util.announcements.length; k++) {
-      window.util.filteredData.push(k);
+      var ann = window.util.announcements[k];
+      if (Object.keys(ann.offer).length !== 0) {
+        window.util.filteredData.push(k);
+      }
     }
     window.pin.create(window.util.filteredData);
   };
