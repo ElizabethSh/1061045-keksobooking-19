@@ -67,7 +67,7 @@
       if (currentCoords.x < 0 - window.util.MAIN_PIN_RADIUS) {
         mainPinHandler.style.left = 0 - window.util.MAIN_PIN_RADIUS;
       } else if (currentCoords.x > X_MAX - window.util.MAIN_PIN_RADIUS) {
-        mainPinHandler.style.left = (X_MAX - window.util.MAIN_PIN_RADIUS - mainPinHandler.style.height) + 'px';
+        mainPinHandler.style.left = (X_MAX - window.util.MAIN_PIN_RADIUS) + 'px';
       } else {
         mainPinHandler.style.left = currentCoords.x + 'px';
       }
