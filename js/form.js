@@ -24,36 +24,40 @@
   // соответствие полей кол-во комнат и кол-во гостей
 
   var onRoomsCapasityChange = function () {
-    if (roomNumber.value === '1' && capacity.value !== '1') {
-      roomNumber.setCustomValidity('Для такого количества комнат можно выбрать 1 гостя');
-    } else if ((roomNumber.value === '2' && capacity.value < '1') || (roomNumber.value === '2' && capacity.value > '2')) {
-      roomNumber.setCustomValidity('Для такого количества комнат можно выбрать 1 или 2 гостей');
-    } else if (roomNumber.value === '3' && capacity.value < '1') {
-      roomNumber.setCustomValidity('Для такого количества комнат можно выбрать 1, 2 или 3 гостей');
-    } else if (roomNumber.value === '100' && capacity.value !== '0') {
-      roomNumber.setCustomValidity('Для такого количества комнат можно выбрать вариант "не для гостей"');
+    var roomNumberValue = parseInt(roomNumber.value, 10);
+    var capacityValue = parseInt(capacity.value, 10);
+    var message = 'Для такого количества комнат можно выбрать ';
+
+    if (roomNumberValue === 1 && capacityValue !== 1) {
+      roomNumber.setCustomValidity(message + '1 гостя');
+    } else if ((roomNumberValue === 2 && capacityValue < 1) || (roomNumberValue === 2 && capacityValue > 2)) {
+      roomNumber.setCustomValidity(message + '1 или 2 гостей');
+    } else if (roomNumberValue === 3 && capacityValue < 1) {
+      roomNumber.setCustomValidity(message + '1, 2 или 3 гостей');
+    } else if (roomNumberValue === 100 && capacityValue !== 0) {
+      roomNumber.setCustomValidity(message + 'вариант "не для гостей"');
     } else {
       roomNumber.setCustomValidity('');
     }
   };
 
-  roomNumber.addEventListener('change', function () {
-    onRoomsCapasityChange();
-  });
-
-  capacity.addEventListener('change', function () {
-    onRoomsCapasityChange();
-  });
+  roomNumber.addEventListener('change', onRoomsCapasityChange);
+  capacity.addEventListener('change', onRoomsCapasityChange);
 
   // время заезда и выезда
 
-  timeIn.addEventListener('change', function () {
+  var onTimeInChange = function () {
     timeOut.value = timeIn.value;
-  });
+  };
 
-  timeOut.addEventListener('change', function () {
+  timeIn.addEventListener('change', onTimeInChange);
+
+
+  var onTimeOutChange = function () {
     timeIn.value = timeOut.value;
-  });
+  };
+
+  timeOut.addEventListener('change', onTimeOutChange);
 
   // соответствие типа жилья и минимальной цены
 
@@ -62,9 +66,9 @@
     price.setAttribute('min', priceOfPropertyMap[propertyType.value]);
   };
 
-  propertyType.addEventListener('change', function () {
-    onPropertyTypeChange();
-  });
+  propertyType.addEventListener('change', onPropertyTypeChange);
+
+  // закрытие окна с сообщением об успешной отправке формы
 
   var closeSuccessWindow = function () {
     window.util.removeElement('.success');
@@ -76,18 +80,24 @@
     window.util.isEscapeEvent(evt, closeSuccessWindow);
   };
 
+  // функция-обработчик успешной отправки данных
+
+  var onSuccessSend = function () {
+    window.page.deactivate();
+    var windowSuccess = similarSuccessWindow.cloneNode(true);
+    main.appendChild(windowSuccess);
+    main.querySelector('.success').addEventListener('click', closeSuccessWindow);
+    document.addEventListener('keydown', onSuccessWindowEscPress);
+  };
+
+  // отправка данных формы
+
   noticeForm.addEventListener('submit', function (evt) {
-    window.backend.send(new FormData(noticeForm), function () {
-      window.page.deactivate();
-      var windowSuccess = similarSuccessWindow.cloneNode(true);
-      main.appendChild(windowSuccess);
-      main.querySelector('.success').addEventListener('click', function () {
-        closeSuccessWindow();
-      });
-      document.addEventListener('keydown', onSuccessWindowEscPress);
-    }, window.page.errorHandler);
+    window.backend.send(new FormData(noticeForm), onSuccessSend, window.page.errorHandler);
     evt.preventDefault();
   });
+
+  // сброс введенных данных в форме
 
   noticeForm.addEventListener('reset', function () {
     noticeForm.reset();
