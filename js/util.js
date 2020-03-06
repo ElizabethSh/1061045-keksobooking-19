@@ -6,29 +6,29 @@
   var MAIN_PIN_HEIGHT = 81;
   var MAIN_PIN_RADIUS = Math.round(MAIN_PIN_WIDTH / 2); // 33
 
-  var Keycode = {
-    ENTER: 13,
-    ESC: 27,
-    MOUSE_LEFT: 1
+  var Key = {
+    ENTER: 'Enter',
+    ESC: 'Escape',
+    MOUSE_LEFT: 0
   };
 
   var announcements = [];
   var filteredData = [];
 
   var isEnterEvent = function (evt, action) {
-    if (evt.keyCode === Keycode.ENTER) {
+    if (evt.key === Key.ENTER) {
       action();
     }
   };
 
-  var isMouseLeftEvent = function (action) {
-    if (event.which === Keycode.MOUSE_LEFT) {
+  var isMouseLeftEvent = function (evt, action) {
+    if (evt.button === Key.MOUSE_LEFT) {
       action();
     }
   };
 
   var isEscapeEvent = function (evt, action) {
-    if (evt.keyCode === Keycode.ESC) {
+    if (evt.key === Key.ESC) {
       action();
     }
   };
