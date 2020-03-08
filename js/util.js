@@ -12,9 +12,6 @@
     MOUSE_LEFT: 0
   };
 
-  var announcements = [];
-  var filteredData = [];
-
   var isEnterEvent = function (evt, action) {
     if (evt.key === Key.ENTER) {
       action();
@@ -41,9 +38,6 @@
     MAIN_PIN_WIDTH: MAIN_PIN_WIDTH,
     MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT,
     MAIN_PIN_RADIUS: MAIN_PIN_RADIUS,
-
-    announcements: announcements,
-    filteredData: filteredData,
 
     isEnterEvent: isEnterEvent,
     isMouseLeftEvent: isMouseLeftEvent,
