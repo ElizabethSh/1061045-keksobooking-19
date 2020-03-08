@@ -2,6 +2,7 @@
 
 (function () {
   var noticeForm = document.querySelector('.ad-form');
+  var addressField = noticeForm.querySelector('#address'); // находим поле адреса
   var roomNumber = noticeForm.querySelector('#room_number');
   var capacity = noticeForm.querySelector('#capacity');
 
@@ -19,6 +20,10 @@
     flat: 1000,
     house: 5000,
     palace: 10000
+  };
+
+  var fillAddressField = function (x, y) {
+    addressField.setAttribute('value', x + ', ' + y);
   };
 
   // соответствие полей кол-во комнат и кол-во гостей
@@ -105,4 +110,8 @@
     window.card.remove();
     window.pin.remove();
   });
+
+  window.form = {
+    fillAddressField: fillAddressField
+  };
 })();
