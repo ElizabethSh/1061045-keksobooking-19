@@ -1,18 +1,16 @@
 'use strict';
 
 (function () {
-  // проверить нужен ли модуль data.js !!!
+
+  var X_MIN = 0;
   var X_MAX = 1200;
   var Y_MIN = 130;
   var Y_MAX = 630;
 
   var map = document.querySelector('.map');
   var mapPinsList = map.querySelector('.map__pins');
-  var addressField = document.querySelector('#address');
 
   var onPinPress = function (evt) {
-    window.card.remove(); // функция удаления карточки, чтобы всегда открыта была талько одна
-
     // По нажатию на пин объявлений создаем соответствующую ему карточку
     if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
       if (!evt.target.matches('img[alt="Метка объявления"]')) {
@@ -62,10 +60,15 @@
         y: mainPinHandler.offsetTop - shift.y
       };
 
-      addressField.setAttribute('value', mainPinHandler.offsetLeft + window.util.MAIN_PIN_RADIUS + ', ' + (mainPinHandler.offsetTop + window.util.MAIN_PIN_HEIGHT));
+      var coordsForAddressField = {
+        x: mainPinHandler.offsetLeft + window.util.MAIN_PIN_RADIUS,
+        y: mainPinHandler.offsetTop + window.util.MAIN_PIN_HEIGHT
+      };
 
-      if (currentCoords.x < 0 - window.util.MAIN_PIN_RADIUS) {
-        mainPinHandler.style.left = 0 - window.util.MAIN_PIN_RADIUS;
+      window.form.fillAddressField(coordsForAddressField.x, coordsForAddressField.y);
+
+      if (currentCoords.x < X_MIN - window.util.MAIN_PIN_RADIUS) {
+        mainPinHandler.style.left = X_MIN - window.util.MAIN_PIN_RADIUS + 'px';
       } else if (currentCoords.x > X_MAX - window.util.MAIN_PIN_RADIUS) {
         mainPinHandler.style.left = (X_MAX - window.util.MAIN_PIN_RADIUS) + 'px';
       } else {
@@ -73,9 +76,9 @@
       }
 
       if (currentCoords.y < Y_MIN - window.util.MAIN_PIN_HEIGHT) {
-        mainPinHandler.style.top = Y_MIN - window.util.MAIN_PIN_HEIGHT;
+        mainPinHandler.style.top = Y_MIN - window.util.MAIN_PIN_HEIGHT + 'px';
       } else if (currentCoords.y > Y_MAX - window.util.MAIN_PIN_HEIGHT) {
-        mainPinHandler.style.top = Y_MAX - window.util.MAIN_PIN_HEIGHT;
+        mainPinHandler.style.top = Y_MAX - window.util.MAIN_PIN_HEIGHT + 'px';
       } else {
         mainPinHandler.style.top = currentCoords.y + 'px';
       }
@@ -91,9 +94,4 @@
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   });
-
-  /* window.map = {
-    onPinPress: onPinPress
-  };*/
-
 })();
