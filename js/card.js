@@ -43,7 +43,7 @@
   // создание фоток в карточке
   var createPhotos = function (arrayOfPhotos) {
     var popupPhotos = document.querySelector('.popup__photos'); // конейнер с фотками
-    document.querySelector('.popup__photo').remove(); // удали img, которое есть
+    popupPhotos.innerHTML = ''; // очисти контейнер от фото
     removeBlock(arrayOfPhotos, '.popup__photos');
     var fragment = document.createDocumentFragment(); // создай новый img c нужными атрибутами
 
@@ -68,10 +68,8 @@
     var popupFeaturesList = document.querySelector('.popup__features'); // существующий в шаблоне списое удобств
     removeBlock(arrayOfFeatures, '.popup__features');
 
-    var features = document.querySelectorAll('.popup__feature'); // находим все элементы li этого списка
-    features.forEach(function (feature) { // удаляем их все
-      feature.remove();
-    });
+    popupFeaturesList.innerHTML = '';
+
     var fragment = document.createDocumentFragment(); // создаем новые элементы li в зависимости от содержания передаваемого массива
     arrayOfFeatures.forEach(function (it) { // для каждому новому li добавляем класс для отображения соответствующего удобства
       fragment.appendChild(renderFeatures(it));
@@ -80,9 +78,9 @@
   };
 
   // код для создания и заполнения карточек
-  var renderCard = function (annIndex) {
+  var renderCard = function (announcementsIndex) {
     var cardElement = similarCardTemplate.cloneNode(true);
-    var announcement = window.util.announcements[annIndex];
+    var announcement = window.data.announcements[announcementsIndex];
     var popupAvatar = cardElement.querySelector('.popup__avatar');
 
     if (announcement.author.avatar !== '') {
@@ -133,15 +131,15 @@
 
   // функция создания карточки объявления
 
-  var createCard = function (annIndex) {
-
+  var createCard = function (announcementsIndex) {
+    window.card.remove(); // функция удаления карточки, чтобы всегда открыта была талько одна
     var fragment = document.createDocumentFragment();
-    fragment.appendChild(renderCard([annIndex])); // создаем карточку
+    fragment.appendChild(renderCard(announcementsIndex)); // создаем карточку
 
     map.insertBefore(fragment, mapFiltersContainer);
 
-    createPhotos(window.util.announcements[annIndex].offer.photos); // добавляем фото объекта размещения
-    createFutures(window.util.announcements[annIndex].offer.features); // добавляем доступные удобства*/
+    createPhotos(window.data.announcements[announcementsIndex].offer.photos); // добавляем фото объекта размещения
+    createFutures(window.data.announcements[announcementsIndex].offer.features); // добавляем доступные удобства*/
     var popupCloseButton = document.querySelector('.popup__close');
     popupCloseButton.addEventListener('click', removeCard);
     document.addEventListener('keydown', onCardEscPress);
