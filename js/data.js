@@ -1,77 +1,98 @@
 'use strict';
 
 (function () {
-  var X_MAX = 1200;
-  var Y_MIN = 130;
-  var Y_MAX = 630;
+  var map = document.querySelector('.map');
+  var mapFilter = map.querySelector('.map__filters');
+  var housingType = mapFilter.querySelector('#housing-type');
+  var housingPrice = mapFilter.querySelector('#housing-price');
+  var housingRoom = mapFilter.querySelector('#housing-rooms');
+  var housingGuests = mapFilter.querySelector('#housing-guests');
 
-  var types = ['palace', 'flat', 'house', 'bungalo'];
-  var checkins = ['12:00', '13:00', '14:00'];
-  var checkouts = ['12:00', '13:00', '14:00'];
-  var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-  var photos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
+  var announcements = [];
+  var filteredData = [];
 
-  var getNumber = function (min, max) {
-    var randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-    return randomNumber;
+  var propertyChoice;
+  var priceChoice;
+  var roomChoice;
+  var guestChoice;
+
+  var propertyPriceRate = {
+    min: 10000,
+    max: 50000
   };
 
-  var getArray = function (arr) {
-    var newArray = [];
-    for (var j = 0; j < arr.length; j++) {
-      var randomNumber = Math.random();
-      if (randomNumber < 0.5) {
-        newArray += (arr[j] + ', ');
+  var isOfferFilled = function () {
+    window.data.announcements.forEach(function (it, i) {
+      it = window.data.announcements[i];
+      if (Object.keys(it.offer).length !== 0) {
+        window.data.filteredData.push(i);
       }
-    }
-    return newArray;
+    });
   };
 
-  var getArraysIndex = function (arr) {
-    var arraysIndex = Math.floor(Math.random() * arr.length);
-    return arraysIndex;
-  };
+  mapFilter.addEventListener('change', function () {
 
-  var getArraysValue = function (arr) {
-    var arraysValue = arr[getArraysIndex(arr)];
-    return arraysValue;
-  };
+    window.card.remove();
+    propertyChoice = housingType.value;
+    priceChoice = housingPrice.value;
+    roomChoice = parseInt(housingRoom.value, 10);
+    guestChoice = parseInt(housingGuests.value, 10);
 
-  var getArraysData = function (index) {
-    var locationX = getNumber(0, X_MAX);
-    var locationY = getNumber(Y_MIN, Y_MAX);
-    index = index + 1;
+    window.debounce(updateData);
+  });
 
-    var arrayItem = {
-      author: {
-        avatar: 'img/avatars/user' + '0' + index + '.png', // где {{xx}} это число от 1 до 8 с ведущим нулём. Например, 01, 02 и т. д. Адреса изображений не повторяются
-      },
+  var updateData = function () {
+    filteredData = [];
 
-      offer: {
-        title: 'строка, заголовок предложения',
-        address: locationX + ', ' + locationY, // 'строка, адрес предложения' //  Для простоты пусть пока представляет собой запись вида "{{location.x}}, {{location.y}}", например, "600, 350"
-        price: getNumber(1, 10000), // число, стоимость
-        type: getArraysValue(types), //  flat, house или bungalo
-        rooms: getNumber(1, 10), //  число, количество комнат
-        guests: getNumber(1, 10), // число, количество гостей, которое можно разместить
-        checkin: getArraysValue(checkins), //  строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00,
-        checkout: getArraysValue(checkouts), //  строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00
-        checkedFeatures: getArray(features), //  массив строк случайной длины из ниже предложенных: "wifi", "dishwasher", "parking", "washer", "elevator", "conditioner",
-        description: 'строка с описанием',
-        photoLinks: getArray(photos), //  массив строк случайной длины, содержащий адреса фотографий "http://o0.github.io/assets/images/tokyo/hotel1.jpg", "http://o0.github.io/assets/images/tokyo/hotel2.jpg", "http://o0.github.io/assets/images/tokyo/hotel3.jpg"
-      },
+    // получаем массив выбранных удобств
+    var pickedFeatures = [];
+    var inputFeaturesChecked = mapFilter.querySelectorAll('input[type="checkbox"]:checked');
 
-      location: {
-        x: locationX, //  случайное число, координата x метки на карте. Значение ограничено размерами блока, в котором перетаскивается метка.
-        y: locationY //  случайное число, координата y метки на карте от 130 до 630.
+    inputFeaturesChecked.forEach(function (it) {
+      pickedFeatures.push(it.value);
+    });
+
+    // фильтрация данных
+    window.data.announcements.forEach(function (it, i) {
+      it = window.data.announcements[i];
+      // определение соответствия категории цены
+      if (it.offer.price >= propertyPriceRate.min && it.offer.price <= propertyPriceRate.max) {
+        var chosenPrice = 'middle';
+      } else if (it.offer.price < propertyPriceRate.min) {
+        chosenPrice = 'low';
+      } else if (it.offer.price > propertyPriceRate.max) {
+        chosenPrice = 'high';
+      } else {
+        chosenPrice = 'any';
       }
-    };
 
-    return arrayItem;
+      // функция определения, есть ли в объявленях выбранное удобство
+      var isFeature = function () {
+        var pikedFeature = true;
+        for (var j = 0; j < pickedFeatures.length; j++) {
+          var isAddToFilteredData = it.offer.features.includes(pickedFeatures[j]);
+          if (!isAddToFilteredData) {
+            pikedFeature = false;
+            break;
+          }
+        }
+        return pikedFeature;
+      };
+
+      if ((it.offer.type === propertyChoice || housingType.value === 'any') &&
+      (it.offer.rooms === roomChoice || housingRoom.value === 'any') &&
+      (it.offer.guests === guestChoice || housingGuests.value === 'any') &&
+      (chosenPrice === priceChoice || housingPrice.value === 'any') && (isFeature())) {
+        filteredData.push(i);
+      }
+    });
+
+    window.pin.create(filteredData);
   };
 
   window.data = {
-    getNumber: getNumber,
-    getArraysData: getArraysData,
+    announcements: announcements,
+    filteredData: filteredData,
+    isOfferFilled: isOfferFilled
   };
 })();
