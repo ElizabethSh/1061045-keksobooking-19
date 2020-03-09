@@ -12,22 +12,21 @@
 
   var onPinPress = function (evt) {
     // По нажатию на пин объявлений создаем соответствующую ему карточку
-    if (evt.target && (evt.target.matches('img') || evt.target.matches('button[type="button"]'))) {
-      if (!evt.target.matches('img[alt="Метка объявления"]')) {
-        window.card.create(evt.target.getAttribute('key'));
-        var mapPinActive = mapPinsList.querySelector('.map__pin--active');
-        if (mapPinActive) {
-          mapPinActive.classList.remove('map__pin--active');
-        }
+    if (evt.target && (evt.target.matches('img[key]') || evt.target.matches('button[type="button"]'))) {
+      window.card.create(evt.target.getAttribute('key'));
+      var mapPinActive = mapPinsList.querySelector('.map__pin--active');
+      if (mapPinActive) {
+        mapPinActive.classList.remove('map__pin--active');
+      }
 
-        if (evt.target.matches('img')) {
-          evt.target.parentNode.classList.add('map__pin--active');
-        } else {
-          evt.target.classList.add('map__pin--active');
-        }
+      if (evt.target.matches('img')) {
+        evt.target.parentNode.classList.add('map__pin--active');
+      } else {
+        evt.target.classList.add('map__pin--active');
       }
     }
   };
+
 
   mapPinsList.addEventListener('click', onPinPress);
 
