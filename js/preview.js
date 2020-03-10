@@ -18,14 +18,16 @@
 
   // загрузка аватарки пользователя
 
-  avatarFileChooser.addEventListener('change', function () {
+  var onAvatarChooserChange = function () {
     var file = avatarFileChooser.files[0];
     setup(avatarPreview, file);
-  });
+    // console.log('nfkhkfh');
+  };
+
+  avatarFileChooser.addEventListener('change', onAvatarChooserChange);
 
   // загрузка фотографии объекта размещения
-
-  propertyFileChooser.addEventListener('change', function () {
+  var onPropertyChooserChange = function () {
     var propertyPhoto = document.createElement('img');
     propertyPhoto.setAttribute('src', '');
     propertyPhoto.setAttribute('width', '70');
@@ -35,5 +37,18 @@
 
     var file = propertyFileChooser.files[0];
     setup(propertyPhoto, file);
-  });
+  };
+
+  propertyFileChooser.addEventListener('change', onPropertyChooserChange);
+
+  var removeListeners = function () {
+    avatarFileChooser.removeEventListener('change', onAvatarChooserChange);
+    propertyFileChooser.removeEventListener('change', onPropertyChooserChange);
+  };
+
+  window.preview = {
+    avatarPreview: avatarPreview,
+    adFormPhoto: adFormPhoto,
+    removeListeners: removeListeners
+  };
 })();
