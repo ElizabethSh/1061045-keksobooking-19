@@ -5,11 +5,16 @@
   var PIN_HEIGHT = 70;
   var PIN_AMOUNT_MAX = 5;
 
+  var MAIN_PIN_HEIGHT = 81;
+  var mainPinWidth = document.querySelector('.map__pin--main').offsetWidth;
+  var mainPinRadius = Math.round(mainPinWidth / 2); // 33
+
   var similarAnnouncementTemplate = document.querySelector('#pin')
         .content
         .querySelector('button');
-  var map = document.querySelector('.map');
-  var mapPinsList = map.querySelector('.map__pins');
+
+
+  var mapPinsList = document.querySelector('.map__pins');
 
   var renderPin = function (index) {
     var announcementElement = similarAnnouncementTemplate.cloneNode(true);
@@ -34,14 +39,19 @@
   // Функция создания пинов на карте
   var createPin = function (data) {
     var takeNumber = Math.min(data.length, PIN_AMOUNT_MAX); // выводить не больше 5 элементов
-    // var fragment = document.createDocumentFragment();
     removePins();
+    var fragment = document.createDocumentFragment();
     for (var i = 0; i < takeNumber; i++) {
-      mapPinsList.appendChild(renderPin(data[i]));
+      fragment.appendChild(renderPin(data[i]));
     }
+    mapPinsList.appendChild(fragment);
   };
 
   window.pin = {
+    MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT,
+    mainPinRadius: mainPinRadius,
+    mapPinsList: mapPinsList,
+
     create: createPin,
     remove: removePins
   };
