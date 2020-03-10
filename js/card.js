@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var map = document.querySelector('.map');
   var similarCardTemplate = document.querySelector('#card')
                             .content.querySelector('.map__card');
   var mapFiltersContainer = document.querySelector('.map__filters-container'); // элемент, перед которым вставляем карточку
@@ -136,7 +135,7 @@
     var fragment = document.createDocumentFragment();
     fragment.appendChild(renderCard(announcementsIndex)); // создаем карточку
 
-    map.insertBefore(fragment, mapFiltersContainer);
+    window.page.map.insertBefore(fragment, mapFiltersContainer);
 
     createPhotos(window.data.announcements[announcementsIndex].offer.photos); // добавляем фото объекта размещения
     createFutures(window.data.announcements[announcementsIndex].offer.features); // добавляем доступные удобства*/
