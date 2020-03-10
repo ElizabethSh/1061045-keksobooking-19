@@ -3,9 +3,8 @@
 (function () {
 
   var map = document.querySelector('.map');
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var noticeForm = document.querySelector('.ad-form');
-  var mapFilter = map.querySelector('.map__filters');
+  var mapPinMain = map.querySelector('.map__pin--main');
+  var mapFilter = map.querySelector('.map__filters'); // чтобы найти все селекты
   var mapFilterFields = mapFilter.querySelectorAll('select');
   var notice = document.querySelector('.notice');
   var noticeFieldsets = notice.querySelectorAll('fieldset');
@@ -17,10 +16,9 @@
   };
 
   // определяем координаты центра пина
-  var mapPinMainX = mapPinMainCoordinates.x + window.util.MAIN_PIN_RADIUS;
-  var mapPinMainY = mapPinMainCoordinates.y + window.util.MAIN_PIN_RADIUS;
-  //
-  var main = document.querySelector('main'); // куда клонируем
+  var mapPinMainX = mapPinMainCoordinates.x + window.pin.mainPinRadius;
+  var mapPinMainY = mapPinMainCoordinates.y + window.pin.mainPinRadius;
+
   var similarErrorTemplate = document.querySelector('#error') // нашли что клонировать
                              .content
                              .querySelector('div');
@@ -28,15 +26,16 @@
 
   // Функция перевода страницы в неактивное состояние
   var deactivate = function () {
+    window.map.removeListner();
     map.classList.add('map--faded');
-    noticeForm.classList.add('ad-form--disabled');
+    window.form.noticeForm.classList.add('ad-form--disabled');
 
     // запоминаем начальные координаты пина до его перемещения
     mapPinMain.style.top = mapPinMainCoordinates.y + 'px';
     mapPinMain.style.left = mapPinMainCoordinates.x + 'px';
 
     // при деактивайии координата Y меняется (центр метки)
-    mapPinMainY = mapPinMainCoordinates.y + window.util.MAIN_PIN_RADIUS;
+    mapPinMainY = mapPinMainCoordinates.y + window.pin.mainPinRadius;
 
     // подставляем координаты в поле адрес
     window.form.fillAddressField(mapPinMainX, mapPinMainY);
@@ -50,6 +49,7 @@
       it.setAttribute('disabled', '');
     });
     mapPinMain.addEventListener('mousedown', onPinMousedownPress);
+    mapPinMain.addEventListener('keydown', onMainPinEnterPress);
   };
 
   deactivate();
@@ -57,10 +57,11 @@
 
   // Переводит страницу в активное состояние
   var activate = function () {
+    window.map.addListner();
     window.backend.load(successHandler, errorHandler);
 
     // при активации координата Y изменяется (указатель пина)
-    mapPinMainY = mapPinMainCoordinates.y + window.util.MAIN_PIN_HEIGHT;
+    mapPinMainY = mapPinMainCoordinates.y + window.pin.MAIN_PIN_HEIGHT;
 
     map.classList.remove('map--faded');
 
@@ -69,13 +70,14 @@
       it.removeAttribute('disabled'); // убирает из фильтра объявлений с selectов disabled
     });
 
-    noticeForm.classList.remove('ad-form--disabled'); // убирает disabled с формы подачи объявления
+    window.form.noticeForm.classList.remove('ad-form--disabled'); // убирает disabled с формы подачи объявления
     noticeFieldsets.forEach(function (it) {
       it.removeAttribute('disabled'); // убирает из объявлений с selectов disabled
     });
 
     window.form.fillAddressField(mapPinMainX, mapPinMainY);
     mapPinMain.removeEventListener('mousedown', onPinMousedownPress);
+    mapPinMain.removeEventListener('keydown', onMainPinEnterPress);
   };
 
   // функция активации страницы по mousedown на пин
@@ -83,12 +85,15 @@
     window.util.isMouseLeftEvent(evt, activate);
   };
 
-  // при нажатии на пин вызывает функцию onPinMousedownPress
   mapPinMain.addEventListener('mousedown', onPinMousedownPress);
 
-  mapPinMain.addEventListener('keydown', function (evt) {
+  // функция активации страницы по нажатию Enter на пин
+  var onMainPinEnterPress = function (evt) {
     window.util.isEnterEvent(evt, activate);
-  });
+  };
+
+  mapPinMain.addEventListener('keydown', onMainPinEnterPress);
+
 
   // функция успешной загрузки данных
   var successHandler = function (data) {
@@ -102,26 +107,40 @@
   // функция закрытия окна ошибки
   var closeErrorMessage = function () {
     var errorWindow = document.querySelector('.error');
+    var errorButton = document.querySelector('.error__button');
     errorWindow.remove();
+    document.removeEventListener('keydown', onDocumentEscPress);
+    errorButton.removeEventListener('click', onErrorButtonPress);
+    errorWindow.removeEventListener('click', onErrorMessageClick);
+  };
+
+  var onErrorMessageClick = function () {
+    closeErrorMessage();
+  };
+
+  var onErrorButtonPress = function (evt) {
+    evt.stopPropagation();
+    closeErrorMessage();
+  };
+
+  var onDocumentEscPress = function (evt) { // закрывает окно с ошибкой по ESC
+    window.util.isEscapeEvent(evt, closeErrorMessage);
   };
 
   // функция ошибки загрузки данных
   var errorHandler = function () {
     var similarErrorWindow = similarErrorTemplate.cloneNode(true); // клонируем шаблон
-    main.appendChild(similarErrorWindow); // рисуем сообщение
+    window.form.main.appendChild(similarErrorWindow); // рисуем сообщение
     var errorButton = document.querySelector('.error__button');
     deactivate();
-    errorButton.addEventListener('click', closeErrorMessage); // закрывает окно с ошибкой по клику на кнопку
-    document.querySelector('.error').addEventListener('click', closeErrorMessage);
-    errorButton.addEventListener('keydown', function (evt) { // закрывает окно с ошибкой по Enter на кнопку
-      window.util.isEnterEvent(evt, closeErrorMessage);
-    });
-    document.addEventListener('keydown', function (evt) { // закрывает окно с ошибкой по ESC
-      window.util.isEscapeEvent(evt, closeErrorMessage);
-    });
+    errorButton.addEventListener('click', onErrorButtonPress); // закрывает окно с ошибкой по клику на кнопку
+    document.querySelector('.error').addEventListener('click', onErrorMessageClick); // закрывает окно с ошибкой по клику на произвольную область экрана за пределами блока с сообщением
+    document.addEventListener('keydown', onDocumentEscPress); // закрывает окно с ошибкой по ESC
   };
 
   window.page = {
+    map: map,
+
     successHandler: successHandler,
     errorHandler: errorHandler,
     deactivate: deactivate,
