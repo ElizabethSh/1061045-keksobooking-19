@@ -97,21 +97,30 @@
 
   // отправка данных формы
 
-  noticeForm.addEventListener('submit', function (evt) {
+  var onSubmitPress = function (evt) {
     window.backend.send(new FormData(noticeForm), onSuccessSend, window.page.errorHandler);
     evt.preventDefault();
-  });
+  };
+
+  noticeForm.addEventListener('submit', onSubmitPress);
 
   // сброс введенных данных в форме
 
-  noticeForm.addEventListener('reset', function () {
+  var onResetPress = function () {
     noticeForm.reset();
+    window.preview.avatarPreview.setAttribute('src', 'img/muffin-grey.svg');
+    window.preview.adFormPhoto.innerHTML = '';
     window.page.deactivate();
     window.card.remove();
     window.pin.remove();
-  });
+  };
+
+  noticeForm.addEventListener('reset', onResetPress);
 
   window.form = {
+    noticeForm: noticeForm,
+    main: main,
+
     fillAddressField: fillAddressField
   };
 })();
