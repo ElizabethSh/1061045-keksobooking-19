@@ -26,7 +26,11 @@
 
   // Функция перевода страницы в неактивное состояние
   var deactivate = function () {
-    window.map.removeListner();
+    window.map.removeListeners();
+    window.preview.removeListeners();
+    window.data.mapFilter.removeEventListener('change', window.data.onFiltersChange);
+    window.form.removeListeners();
+    mapFilter.reset();
     map.classList.add('map--faded');
     window.form.noticeForm.classList.add('ad-form--disabled');
 
@@ -57,7 +61,10 @@
 
   // Переводит страницу в активное состояние
   var activate = function () {
-    window.map.addListner();
+    window.map.addListeners();
+    window.preview.addListeners();
+    window.form.addListeners();
+    window.data.mapFilter.addEventListener('change', window.data.onFiltersChange);
     window.backend.load(successHandler, errorHandler);
 
     // при активации координата Y изменяется (указатель пина)
@@ -111,10 +118,10 @@
     errorWindow.remove();
     document.removeEventListener('keydown', onDocumentEscPress);
     errorButton.removeEventListener('click', onErrorButtonPress);
-    errorWindow.removeEventListener('click', onErrorMessageClick);
+    errorWindow.removeEventListener('click', onErrorWindowClick);
   };
 
-  var onErrorMessageClick = function () {
+  var onErrorWindowClick = function () {
     closeErrorMessage();
   };
 
@@ -132,9 +139,8 @@
     var similarErrorWindow = similarErrorTemplate.cloneNode(true); // клонируем шаблон
     window.form.main.appendChild(similarErrorWindow); // рисуем сообщение
     var errorButton = document.querySelector('.error__button');
-    deactivate();
     errorButton.addEventListener('click', onErrorButtonPress); // закрывает окно с ошибкой по клику на кнопку
-    document.querySelector('.error').addEventListener('click', onErrorMessageClick); // закрывает окно с ошибкой по клику на произвольную область экрана за пределами блока с сообщением
+    document.querySelector('.error').addEventListener('click', onErrorWindowClick); // закрывает окно с ошибкой по клику на произвольную область экрана за пределами блока с сообщением
     document.addEventListener('keydown', onDocumentEscPress); // закрывает окно с ошибкой по ESC
   };
 
