@@ -91,16 +91,18 @@
   var mainPinHandler = document.querySelector('.map__pin--main');
   mainPinHandler.addEventListener('mousedown', onMouseDown);
 
-  var removeListner = function () {
+  var removeListeners = function () {
+    window.pin.mapPinsList.removeEventListener('click', onPinPress);
     mainPinHandler.removeEventListener('mousedown', onMouseDown);
   };
 
-  var addListner = function () {
+  var addListeners = function () {
+    window.pin.mapPinsList.addEventListener('click', onPinPress);
     mainPinHandler.addEventListener('mousedown', onMouseDown);
   };
 
   window.map = {
-    removeListner: removeListner,
-    addListner: addListner
+    removeListeners: removeListeners,
+    addListeners: addListeners
   };
 })();
