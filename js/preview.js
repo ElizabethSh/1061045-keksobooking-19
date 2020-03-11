@@ -8,11 +8,13 @@
   var adFormPhoto = document.querySelector('.ad-form__photo');
 
   var setup = function (element, file) {
-
     var reader = new FileReader();
-    reader.addEventListener('load', function () {
+
+    var onReaderLoad = function () {
       element.src = reader.result;
-    });
+    };
+
+    reader.addEventListener('load', onReaderLoad);
     reader.readAsDataURL(file);
   };
 
@@ -21,7 +23,6 @@
   var onAvatarChooserChange = function () {
     var file = avatarFileChooser.files[0];
     setup(avatarPreview, file);
-    // console.log('nfkhkfh');
   };
 
   avatarFileChooser.addEventListener('change', onAvatarChooserChange);
@@ -46,9 +47,15 @@
     propertyFileChooser.removeEventListener('change', onPropertyChooserChange);
   };
 
+  var addListeners = function () {
+    avatarFileChooser.addEventListener('change', onAvatarChooserChange);
+    propertyFileChooser.addEventListener('change', onPropertyChooserChange);
+  };
+
   window.preview = {
     avatarPreview: avatarPreview,
     adFormPhoto: adFormPhoto,
-    removeListeners: removeListeners
+    removeListeners: removeListeners,
+    addListeners: addListeners
   };
 })();
