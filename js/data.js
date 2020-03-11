@@ -89,9 +89,11 @@
   };
 
   window.data = {
+    mapFilter: mapFilter,
     announcements: announcements,
     filteredData: filteredData,
 
+    onFiltersChange: onFiltersChange,
     isOfferFilled: isOfferFilled
   };
 })();
