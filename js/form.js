@@ -73,26 +73,31 @@
 
   propertyType.addEventListener('change', onPropertyTypeChange);
 
-  // закрытие окна с сообщением об успешной отправке формы
-
-  var closeSuccessWindow = function () {
-    window.util.removeElement('.success');
-    noticeForm.reset();
-    document.removeEventListener('keydown', onSuccessWindowEscPress);
-  };
-
-  var onSuccessWindowEscPress = function (evt) {
-    window.util.isEscapeEvent(evt, closeSuccessWindow);
-  };
-
   // функция-обработчик успешной отправки данных
-
   var onSuccessSend = function () {
     window.page.deactivate();
     var windowSuccess = similarSuccessWindow.cloneNode(true);
     main.appendChild(windowSuccess);
-    main.querySelector('.success').addEventListener('click', closeSuccessWindow);
+    main.querySelector('.success').addEventListener('click', onSuccessWindowClick);
     document.addEventListener('keydown', onSuccessWindowEscPress);
+  };
+
+  // закрытие окна с сообщением об успешной отправке формы
+
+  var closeSuccessWindow = function () {
+    var successWindow = main.querySelector('.success');
+    window.util.removeElement('.success');
+    noticeForm.reset();
+    document.removeEventListener('keydown', onSuccessWindowEscPress);
+    successWindow.removeEventListener('click', onSuccessWindowClick);
+  };
+
+  var onSuccessWindowClick = function () {
+    closeSuccessWindow();
+  };
+
+  var onSuccessWindowEscPress = function (evt) {
+    window.util.isEscapeEvent(evt, closeSuccessWindow);
   };
 
   // отправка данных формы
@@ -100,6 +105,7 @@
   var onSubmitPress = function (evt) {
     window.backend.send(new FormData(noticeForm), onSuccessSend, window.page.errorHandler);
     evt.preventDefault();
+    noticeForm.removeEventListener('submit', onSubmitPress);
   };
 
   noticeForm.addEventListener('submit', onSubmitPress);
@@ -113,14 +119,35 @@
     window.page.deactivate();
     window.card.remove();
     window.pin.remove();
+    noticeForm.removeEventListener('reset', onResetPress);
   };
 
   noticeForm.addEventListener('reset', onResetPress);
+
+  var addListeners = function () {
+    roomNumber.addEventListener('change', onRoomsCapasityChange);
+    capacity.addEventListener('change', onRoomsCapasityChange);
+    timeIn.addEventListener('change', onTimeInChange);
+    timeOut.addEventListener('change', onTimeOutChange);
+    noticeForm.addEventListener('submit', onSubmitPress);
+    noticeForm.addEventListener('reset', onResetPress);
+    propertyType.addEventListener('change', onPropertyTypeChange);
+  };
+
+  var removeListeners = function () {
+    roomNumber.removeEventListener('change', onRoomsCapasityChange);
+    capacity.removeEventListener('change', onRoomsCapasityChange);
+    timeIn.removeEventListener('change', onTimeInChange);
+    timeOut.removeEventListener('change', onTimeOutChange);
+    propertyType.removeEventListener('change', onPropertyTypeChange);
+  };
 
   window.form = {
     noticeForm: noticeForm,
     main: main,
 
-    fillAddressField: fillAddressField
+    fillAddressField: fillAddressField,
+    addListeners: addListeners,
+    removeListeners: removeListeners
   };
 })();
