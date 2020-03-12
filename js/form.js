@@ -79,7 +79,7 @@
     var windowSuccess = similarSuccessWindow.cloneNode(true);
     main.appendChild(windowSuccess);
     main.querySelector('.success').addEventListener('click', onSuccessWindowClick);
-    document.addEventListener('keydown', onSuccessWindowEscPress);
+    document.addEventListener('keydown', onDocumentEscPress);
   };
 
   // закрытие окна с сообщением об успешной отправке формы
@@ -88,7 +88,7 @@
     var successWindow = main.querySelector('.success');
     window.util.removeElement('.success');
     noticeForm.reset();
-    document.removeEventListener('keydown', onSuccessWindowEscPress);
+    document.removeEventListener('keydown', onDocumentEscPress);
     successWindow.removeEventListener('click', onSuccessWindowClick);
   };
 
@@ -96,7 +96,7 @@
     closeSuccessWindow();
   };
 
-  var onSuccessWindowEscPress = function (evt) {
+  var onDocumentEscPress = function (evt) {
     window.util.isEscapeEvent(evt, closeSuccessWindow);
   };
 
@@ -145,6 +145,8 @@
   window.form = {
     noticeForm: noticeForm,
     main: main,
+    price: price,
+    priceOfPropertyMap: priceOfPropertyMap,
 
     fillAddressField: fillAddressField,
     addListeners: addListeners,
