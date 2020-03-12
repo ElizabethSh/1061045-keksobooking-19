@@ -43,6 +43,8 @@
 
     // подставляем координаты в поле адрес
     window.form.fillAddressField(mapPinMainX, mapPinMainY);
+    window.form.price.placeholder = window.form.priceOfPropertyMap.flat;
+    window.form.price.min = window.form.priceOfPropertyMap.flat;
     mapFilter.querySelector('fieldset').setAttribute('disabled', '');
 
     mapFilterFields.forEach(function (it) {
