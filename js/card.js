@@ -1,99 +1,170 @@
 'use strict';
 
 (function () {
-  var similarListElement = document.querySelector('.map__pins'); // куда вставить клоны
   var similarCardTemplate = document.querySelector('#card')
                             .content.querySelector('.map__card');
+  var mapFiltersContainer = document.querySelector('.map__filters-container'); // элемент, перед которым вставляем карточку
 
-  var announcement = {
-    author: {
-      avatar: 'img/avatars/user02.png'
-    },
+  var propertyMap = {
+    'flat': 'Квартира',
+    'bungalo': 'Бунгало',
+    'house': 'Дом',
+    'palace': 'Дворец',
+    'any': 'Любой тип жилья'
+  };
 
-    offer: {
-      title: 'Маленькая квартирка рядом с парком',
-      address: '102-0075 Tōkyō-to, Chiyoda-ku, Sanbanchō',
-      price: 30000,
-      type: 'flat',
-      rooms: 1,
-      guests: 1,
-      checkin: '9:00',
-      checkout: '7:00',
-      features: ['elevator', 'conditioner'],
-      description: 'Маленькая чистая квратира на краю парка. Без интернета, регистрации и СМС.',
-      photos: [
-        'https://cdn.ostrovok.ru/t/x500/mec/hotels/5000000/4500000/4493700/4493658/4493658_17_b.jpg',
-        'https://cdn.ostrovok.ru/t/x500/carsolize/images/hotels/23e332cb-1379-4582-85ac-901d6c441635.jpeg',
-      ],
-    },
-    location: {
-      x: 471,
-      y: 545
+  var featuresClassMap = {
+    'wifi': 'popup__feature--wifi',
+    'dishwasher': 'popup__feature--dishwasher',
+    'parking': 'popup__feature--parking',
+    'washer': 'popup__feature--washer',
+    'elevator': 'popup__feature--elevator',
+    'conditioner': 'popup__feature--conditioner'
+  };
+
+  var removeBlock = function (array, className) {
+    if (array.length === 0) {
+      window.util.removeElement(className);
     }
   };
 
-  var getProperty = function () {
-    switch (announcement.offer.type) {
-      case 'flat':
-        return 'Квартира';
-      case 'bungalo':
-        return 'Бунгало ';
-      case 'house':
-        return 'Дом';
-      case 'palace':
-        return 'Дворец';
-      default:
-        return 'Не указан';
-    }
-  };
-  // не работает отрисовка фото
-
-  var renderPhotos = function (photo) {
-    var newElement = document.createElement('img');
-    newElement.className = 'popup__photo';
-    newElement.setAttribute('src', photo);
-    newElement.setAttribute('width', '45');
-    newElement.setAttribute('height', '40');
-    return newElement;
+  // отрисовка фото
+  var renderPhotos = function (pathToPhoto) {
+    var newElementImg = document.createElement('img');
+    newElementImg.className = 'popup__photo';
+    newElementImg.setAttribute('src', pathToPhoto);
+    newElementImg.setAttribute('width', '45');
+    newElementImg.setAttribute('height', '40');
+    newElementImg.setAttribute('alt', 'Фото объекта размещения');
+    return newElementImg;
   };
 
+  // создание фоток в карточке
+  var createPhotos = function (arrayOfPhotos) {
+    var popupPhotos = document.querySelector('.popup__photos'); // конейнер с фотками
+    popupPhotos.innerHTML = ''; // очисти контейнер от фото
+    removeBlock(arrayOfPhotos, '.popup__photos');
+    var fragment = document.createDocumentFragment(); // создай новый img c нужными атрибутами
 
-  var createPhotos = function (array) {
-    var popupPhotos = document.querySelector('.popup__photos');
-    document.querySelector('.popup__photo').remove();
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < announcement.offer.photos.length; i++) {
+    arrayOfPhotos.forEach(function (it) {
+      fragment.appendChild(renderPhotos(it));
+    });
 
-      fragment.appendChild(renderPhotos(array[i]));
-    }
     popupPhotos.appendChild(fragment);
   };
 
+  // создаем элемент li списка удобств
+
+  var renderFeatures = function (feature) {
+    var newElementFeature = document.createElement('li');
+    newElementFeature.className = 'popup__feature ' + featuresClassMap[feature];
+    return newElementFeature;
+  };
+
+  // создаем список удобств
+
+  var createFutures = function (arrayOfFeatures) {
+    var popupFeaturesList = document.querySelector('.popup__features'); // существующий в шаблоне списое удобств
+    removeBlock(arrayOfFeatures, '.popup__features');
+
+    popupFeaturesList.innerHTML = '';
+
+    var fragment = document.createDocumentFragment(); // создаем новые элементы li в зависимости от содержания передаваемого массива
+    arrayOfFeatures.forEach(function (it) { // для каждому новому li добавляем класс для отображения соответствующего удобства
+      fragment.appendChild(renderFeatures(it));
+    });
+    popupFeaturesList.appendChild(fragment);
+  };
+
   // код для создания и заполнения карточек
-
-  var renderCard = function () {
+  var renderCard = function (announcementsIndex) {
     var cardElement = similarCardTemplate.cloneNode(true);
+    var announcement = window.data.announcements[announcementsIndex];
+    var popupAvatar = cardElement.querySelector('.popup__avatar');
 
-    cardElement.querySelector('.popup__title').textContent = announcement.offer.title;
-    cardElement.querySelector('.popup__text--address').textContent = announcement.offer.address;
-    cardElement.querySelector('.popup__text--price').textContent = announcement.offer.price + ' ₽/ночь';
-    cardElement.querySelector('.popup__type').textContent = getProperty();
-    cardElement.querySelector('.popup__text--capacity').textContent = announcement.offer.rooms + ' комнаты для ' + announcement.offer.guests + ' гостей';
-    cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + announcement.offer.checkin + ', ' + 'выезд до ' + announcement.offer.checkout;
+    if (announcement.author.avatar !== '') {
+      popupAvatar.setAttribute('src', announcement.author.avatar);
+    } else {
+      popupAvatar.remove();
+    }
 
-    cardElement.querySelector('.popup__description').textContent = announcement.offer.description;
-    cardElement.querySelector('.popup__avatar').setAttribute('src', announcement.author.avatar);
+    var isFieldFilled = function (fieldOfAnnounsment, className) {
+      if (fieldOfAnnounsment !== '') {
+        cardElement.querySelector(className).textContent = fieldOfAnnounsment;
+      } else {
+        cardElement.querySelector(className).remove();
+      }
+    };
+
+
+    isFieldFilled(announcement.offer.title, '.popup__title');
+    isFieldFilled(announcement.offer.address, '.popup__text--address');
+
+    var popupTextPrice = cardElement.querySelector('.popup__text--price');
+    if (announcement.offer.price !== 0) {
+      popupTextPrice.textContent = announcement.offer.price + ' ₽/ночь';
+    } else {
+      popupTextPrice.remove();
+    }
+
+    isFieldFilled(propertyMap[announcement.offer.type], '.popup__type');
+
+    var popupTextCapacity = cardElement.querySelector('.popup__text--capacity');
+    if (announcement.offer.rooms !== 0 && announcement.offer.guests !== 0) {
+      popupTextCapacity.textContent = announcement.offer.rooms + ' комнаты для ' + announcement.offer.guests + ' гостей';
+    } else {
+      popupTextCapacity.remove();
+    }
+
+    var popupTextTime = cardElement.querySelector('.popup__text--time');
+    if (announcement.offer.checkin !== '' && announcement.offer.checkout !== '') {
+      popupTextTime.textContent = 'Заезд после ' + announcement.offer.checkin + ', ' + 'выезд до ' + announcement.offer.checkout;
+    } else {
+      popupTextTime.remove();
+    }
+
+    isFieldFilled(announcement.offer.description, '.popup__description');
 
     return cardElement;
   };
 
-  var createCard = function () {
-    var fragment = document.createDocumentFragment();
-    fragment.appendChild(renderCard(announcement));
-
-    similarListElement.appendChild(fragment);
-    createPhotos(announcement.offer.photos);
+  var onCloseButtonPress = function () {
+    removeCard();
   };
 
-  createCard(); // вызов функции, чтобы проверить отрисовку карточки
+  var onDocumentEscPress = function (evt) {
+    window.util.isEscapeEvent(evt, removeCard);
+  };
+
+  var removeCard = function () {
+    var mapCard = document.querySelector('.map__card');
+    if (mapCard) {
+      var popupCloseButton = document.querySelector('.popup__close');
+      mapCard.remove();
+      popupCloseButton.removeEventListener('click', onCloseButtonPress);
+    }
+    document.removeEventListener('keydown', onDocumentEscPress);
+  };
+
+
+  // функция создания карточки объявления
+  var createCard = function (announcementsIndex) {
+    window.card.remove(); // функция удаления карточки, чтобы всегда открыта была талько одна
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(renderCard(announcementsIndex)); // создаем карточку
+
+    window.page.map.insertBefore(fragment, mapFiltersContainer);
+
+    createPhotos(window.data.announcements[announcementsIndex].offer.photos); // добавляем фото объекта размещения
+    createFutures(window.data.announcements[announcementsIndex].offer.features); // добавляем доступные удобства*/
+    var popupCloseButton = document.querySelector('.popup__close');
+    popupCloseButton.addEventListener('click', onCloseButtonPress);
+    document.addEventListener('keydown', onDocumentEscPress);
+  };
+
+  window.card = {
+    create: createCard,
+    remove: removeCard
+  };
+
 })();

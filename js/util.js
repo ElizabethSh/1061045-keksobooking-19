@@ -1,31 +1,39 @@
 'use strict';
 
 (function () {
-  var ENTER_KEYCODE = 13;
-  var MOUSE_LEFT_KEYCODE = 1;
-  var ESC_KEYCODE = 27;
+
+  var Key = {
+    ENTER: 'Enter',
+    ESC: 'Escape',
+    MOUSE_LEFT: 0
+  };
 
   var isEnterEvent = function (evt, action) {
-    if (evt.keyCode === ENTER_KEYCODE) {
+    if (evt.key === Key.ENTER) {
       action();
     }
   };
 
-  var isMouseLeftEvent = function (action) {
-    if (event.which === MOUSE_LEFT_KEYCODE) {
+  var isMouseLeftEvent = function (evt, action) {
+    if (evt.button === Key.MOUSE_LEFT) {
       action();
     }
   };
 
   var isEscapeEvent = function (evt, action) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.key === Key.ESC) {
       action();
     }
+  };
+
+  var removeElement = function (className) {
+    document.querySelector(className).remove();
   };
 
   window.util = {
     isEnterEvent: isEnterEvent,
     isMouseLeftEvent: isMouseLeftEvent,
-    isEscapeEvent: isEscapeEvent
+    isEscapeEvent: isEscapeEvent,
+    removeElement: removeElement,
   };
 })();
