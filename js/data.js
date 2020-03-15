@@ -8,7 +8,7 @@
   var housingGuests = mapFilter.querySelector('#housing-guests');
 
   var announcements = [];
-  var filteredData = [];
+  var filteredAnnouncements = [];
 
   var propertyChoice;
   var priceChoice;
@@ -23,7 +23,7 @@
   var isOfferFilled = function () {
     window.data.announcements.forEach(function (it, i) {
       if (Object.keys(it.offer).length !== 0) {
-        window.data.filteredData.push(i);
+        window.data.filteredAnnouncements.push(i);
       }
     });
   };
@@ -41,7 +41,7 @@
   mapFilter.addEventListener('change', onFiltersChange);
 
   var updateData = function () {
-    filteredData = [];
+    filteredAnnouncements = [];
 
     // получаем массив выбранных удобств
     var pickedFeatures = [];
@@ -81,17 +81,17 @@
       (it.offer.rooms === roomChoice || housingRoom.value === 'any') &&
       (it.offer.guests === guestChoice || housingGuests.value === 'any') &&
       (chosenPrice === priceChoice || housingPrice.value === 'any') && (isFeature())) {
-        filteredData.push(i);
+        filteredAnnouncements.push(i);
       }
     });
 
-    window.pin.create(filteredData);
+    window.pin.create(filteredAnnouncements);
   };
 
   window.data = {
     mapFilter: mapFilter,
     announcements: announcements,
-    filteredData: filteredData,
+    filteredAnnouncements: filteredAnnouncements,
 
     onFiltersChange: onFiltersChange,
     isOfferFilled: isOfferFilled
