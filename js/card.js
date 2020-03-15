@@ -32,10 +32,10 @@
   var renderPhotos = function (pathToPhoto) {
     var newElementImg = document.createElement('img');
     newElementImg.className = 'popup__photo';
-    newElementImg.setAttribute('src', pathToPhoto);
-    newElementImg.setAttribute('width', '45');
-    newElementImg.setAttribute('height', '40');
-    newElementImg.setAttribute('alt', 'Фото объекта размещения');
+    newElementImg.src = pathToPhoto;
+    newElementImg.width = 45;
+    newElementImg.height = 40;
+    newElementImg.alt = 'Фото объекта размещения';
     return newElementImg;
   };
 
@@ -83,7 +83,7 @@
     var popupAvatar = cardElement.querySelector('.popup__avatar');
 
     if (announcement.author.avatar !== '') {
-      popupAvatar.setAttribute('src', announcement.author.avatar);
+      popupAvatar.src = announcement.author.avatar;
     } else {
       popupAvatar.remove();
     }
