@@ -1,11 +1,11 @@
 'use strict';
 
 (function () {
-  var PIN_WIDTH = 50;
-  var PIN_HEIGHT = 70;
   var PIN_AMOUNT_MAX = 5;
 
   var Size = {
+    WIDTH: 50,
+    HEIGHT: 70,
     MAIN_HEIGHT: 81,
     MAIN_RADIUS: 33
   };
@@ -20,8 +20,8 @@
   var renderPin = function (index) {
     var announcementElement = similarAnnouncementTemplate.cloneNode(true);
     var announcement = window.data.announcements[index];
-    announcementElement.style.left = announcement.location.x - PIN_WIDTH / 2 + 'px';
-    announcementElement.style.top = announcement.location.y - PIN_HEIGHT + 'px';
+    announcementElement.style.left = announcement.location.x - Size.WIDTH / 2 + 'px';
+    announcementElement.style.top = announcement.location.y - Size.HEIGHT + 'px';
     announcementElement.querySelector('img').src = announcement.author.avatar;
     announcementElement.querySelector('img').alt = announcement.offer.title;
     announcementElement.querySelector('img').dataset.key = index;
