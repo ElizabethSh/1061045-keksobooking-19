@@ -2,7 +2,7 @@
 
 (function () {
   var avatarFileChooser = document.querySelector('.ad-form-header__input');
-  var avatarPreview = document.querySelector('.ad-form-header__preview img');
+  var avatar = document.querySelector('.ad-form-header__preview img');
 
   var propertyFileChooser = document.querySelector('.ad-form__input');
   var adFormPhoto = document.querySelector('.ad-form__photo');
@@ -22,7 +22,7 @@
 
   var onAvatarChooserChange = function () {
     var file = avatarFileChooser.files[0];
-    setup(avatarPreview, file);
+    setup(avatar, file);
   };
 
   avatarFileChooser.addEventListener('change', onAvatarChooserChange);
@@ -30,10 +30,10 @@
   // загрузка фотографии объекта размещения
   var onPropertyChooserChange = function () {
     var propertyPhoto = document.createElement('img');
-    propertyPhoto.setAttribute('src', '');
-    propertyPhoto.setAttribute('width', '70');
-    propertyPhoto.setAttribute('height', '70');
-    propertyPhoto.setAttribute('alt', 'Фото объекта размещения');
+    propertyPhoto.src = '';
+    propertyPhoto.width = 70;
+    propertyPhoto.height = 70;
+    propertyPhoto.alt = 'Фото объекта размещения';
     adFormPhoto.appendChild(propertyPhoto);
 
     var file = propertyFileChooser.files[0];
@@ -53,7 +53,7 @@
   };
 
   window.preview = {
-    avatarPreview: avatarPreview,
+    avatar: avatar,
     adFormPhoto: adFormPhoto,
     removeListeners: removeListeners,
     addListeners: addListeners

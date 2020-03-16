@@ -16,8 +16,8 @@
   };
 
   // определяем координаты центра пина
-  var mapPinMainX = mapPinMainCoordinates.x + window.pin.mainPinRadius;
-  var mapPinMainY = mapPinMainCoordinates.y + window.pin.mainPinRadius;
+  var mapPinMainX = mapPinMainCoordinates.x + window.pin.Size.MAIN_RADIUS;
+  var mapPinMainY = mapPinMainCoordinates.y + window.pin.Size.MAIN_RADIUS;
 
   var similarErrorTemplate = document.querySelector('#error') // нашли что клонировать
                              .content
@@ -32,27 +32,27 @@
     window.form.removeListeners();
     mapFilter.reset();
     map.classList.add('map--faded');
-    window.form.noticeForm.classList.add('ad-form--disabled');
+    window.form.notice.classList.add('ad-form--disabled');
 
     // запоминаем начальные координаты пина до его перемещения
     mapPinMain.style.top = mapPinMainCoordinates.y + 'px';
     mapPinMain.style.left = mapPinMainCoordinates.x + 'px';
 
     // при деактивайии координата Y меняется (центр метки)
-    mapPinMainY = mapPinMainCoordinates.y + window.pin.mainPinRadius;
+    mapPinMainY = mapPinMainCoordinates.y + window.pin.Size.MAIN_RADIUS;
 
     // подставляем координаты в поле адрес
     window.form.fillAddressField(mapPinMainX, mapPinMainY);
     window.form.price.placeholder = window.form.priceOfPropertyMap.flat;
     window.form.price.min = window.form.priceOfPropertyMap.flat;
-    mapFilter.querySelector('fieldset').setAttribute('disabled', '');
+    mapFilter.querySelector('fieldset').disabled = true;
 
     mapFilterFields.forEach(function (it) {
-      it.setAttribute('disabled', '');
+      it.disabled = true;
     });
 
     noticeFieldsets.forEach(function (it) {
-      it.setAttribute('disabled', '');
+      it.disabled = true;
     });
     mapPinMain.addEventListener('mousedown', onPinMousedownPress);
     mapPinMain.addEventListener('keydown', onMainPinEnterPress);
@@ -70,18 +70,18 @@
     window.backend.load(successHandler, errorHandler);
 
     // при активации координата Y изменяется (указатель пина)
-    mapPinMainY = mapPinMainCoordinates.y + window.pin.MAIN_PIN_HEIGHT;
+    mapPinMainY = mapPinMainCoordinates.y + window.pin.Size.MAIN_HEIGHT;
 
     map.classList.remove('map--faded');
 
-    mapFilter.querySelector('fieldset').removeAttribute('disabled'); // убирает из фильтра объявлений с fieldsetа disabled
+    mapFilter.querySelector('fieldset').disabled = false; // убирает из фильтра объявлений с fieldsetа disabled
     mapFilterFields.forEach(function (it) {
-      it.removeAttribute('disabled'); // убирает из фильтра объявлений с selectов disabled
+      it.disabled = false; // убирает из фильтра объявлений с selectов disabled
     });
 
-    window.form.noticeForm.classList.remove('ad-form--disabled'); // убирает disabled с формы подачи объявления
+    window.form.notice.classList.remove('ad-form--disabled'); // убирает disabled с формы подачи объявления
     noticeFieldsets.forEach(function (it) {
-      it.removeAttribute('disabled'); // убирает из объявлений с selectов disabled
+      it.disabled = false; // убирает из объявлений с selectов disabled
     });
 
     window.form.fillAddressField(mapPinMainX, mapPinMainY);
@@ -95,6 +95,7 @@
   };
 
   mapPinMain.addEventListener('mousedown', onPinMousedownPress);
+  mapPinMain.addEventListener('mousedown', window.map.onMouseDown);
 
   // функция активации страницы по нажатию Enter на пин
   var onMainPinEnterPress = function (evt) {
@@ -110,7 +111,7 @@
 
     // если в объявлении не заполнен раздел offer, пин не отрисовывается
     window.data.isOfferFilled();
-    window.pin.create(window.data.filteredData);
+    window.pin.create(window.data.filteredAnnouncements);
   };
 
   // функция закрытия окна ошибки

@@ -6,11 +6,13 @@
   var Y_MIN = 130;
   var Y_MAX = 630;
 
+  var mainPinHandler = document.querySelector('.map__pin--main');
+
   var onPinPress = function (evt) {
     // По нажатию на пин объявлений создаем соответствующую ему карточку
-    if (evt.target && (evt.target.matches('img[key]') || evt.target.matches('button[type="button"]'))) {
-      window.card.create(evt.target.getAttribute('key'));
-      var mapPinActive = window.pin.mapPinsList.querySelector('.map__pin--active');
+    if (evt.target && (evt.target.matches('img[data-key]') || evt.target.matches('button[type="button"]'))) {
+      window.card.create(evt.target.dataset.key);
+      var mapPinActive = window.pin.mapItems.querySelector('.map__pin--active');
       if (mapPinActive) {
         mapPinActive.classList.remove('map__pin--active');
       }
@@ -23,7 +25,7 @@
     }
   };
 
-  window.pin.mapPinsList.addEventListener('click', onPinPress);
+  window.pin.mapItems.addEventListener('click', onPinPress);
 
   // перемещение главного пина на карте
 
@@ -54,24 +56,24 @@
       };
 
       var coordsForAddressField = {
-        x: mainPinHandler.offsetLeft + window.pin.mainPinRadius,
-        y: mainPinHandler.offsetTop + window.pin.MAIN_PIN_HEIGHT
+        x: mainPinHandler.offsetLeft + window.pin.Size.MAIN_RADIUS,
+        y: mainPinHandler.offsetTop + window.pin.Size.MAIN_HEIGHT
       };
 
       window.form.fillAddressField(coordsForAddressField.x, coordsForAddressField.y);
 
-      if (currentCoords.x < X_MIN - window.pin.mainPinRadius) {
-        mainPinHandler.style.left = X_MIN - window.pin.mainPinRadius + 'px';
-      } else if (currentCoords.x > X_MAX - window.pin.mainPinRadius) {
-        mainPinHandler.style.left = (X_MAX - window.pin.mainPinRadius) + 'px';
+      if (currentCoords.x < X_MIN - window.pin.Size.MAIN_RADIUS) {
+        mainPinHandler.style.left = X_MIN - window.pin.Size.MAIN_RADIUS + 'px';
+      } else if (currentCoords.x > X_MAX - window.pin.Size.MAIN_RADIUS) {
+        mainPinHandler.style.left = (X_MAX - window.pin.Size.MAIN_RADIUS) + 'px';
       } else {
         mainPinHandler.style.left = currentCoords.x + 'px';
       }
 
-      if (currentCoords.y < Y_MIN - window.pin.MAIN_PIN_HEIGHT) {
-        mainPinHandler.style.top = Y_MIN - window.pin.MAIN_PIN_HEIGHT + 'px';
-      } else if (currentCoords.y > Y_MAX - window.pin.MAIN_PIN_HEIGHT) {
-        mainPinHandler.style.top = Y_MAX - window.pin.MAIN_PIN_HEIGHT + 'px';
+      if (currentCoords.y < Y_MIN - window.pin.Size.MAIN_HEIGHT) {
+        mainPinHandler.style.top = Y_MIN - window.pin.Size.MAIN_HEIGHT + 'px';
+      } else if (currentCoords.y > Y_MAX - window.pin.Size.MAIN_HEIGHT) {
+        mainPinHandler.style.top = Y_MAX - window.pin.Size.MAIN_HEIGHT + 'px';
       } else {
         mainPinHandler.style.top = currentCoords.y + 'px';
       }
@@ -88,20 +90,16 @@
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  var mainPinHandler = document.querySelector('.map__pin--main');
-  mainPinHandler.addEventListener('mousedown', onMouseDown);
-
   var removeListeners = function () {
-    window.pin.mapPinsList.removeEventListener('click', onPinPress);
-    mainPinHandler.removeEventListener('mousedown', onMouseDown);
+    window.pin.mapItems.removeEventListener('click', onPinPress);
   };
 
   var addListeners = function () {
-    window.pin.mapPinsList.addEventListener('click', onPinPress);
-    mainPinHandler.addEventListener('mousedown', onMouseDown);
+    window.pin.mapItems.addEventListener('click', onPinPress);
   };
 
   window.map = {
+    onMouseDown: onMouseDown,
     removeListeners: removeListeners,
     addListeners: addListeners
   };

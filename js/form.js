@@ -1,19 +1,19 @@
 'use strict';
 
 (function () {
-  var noticeForm = document.querySelector('.ad-form');
-  var addressField = noticeForm.querySelector('#address'); // находим поле адреса
-  var roomNumber = noticeForm.querySelector('#room_number');
-  var capacity = noticeForm.querySelector('#capacity');
+  var notice = document.querySelector('.ad-form');
+  var addressField = notice.querySelector('#address'); // находим поле адреса
+  var roomNumber = notice.querySelector('#room_number');
+  var capacity = notice.querySelector('#capacity');
 
   var similarSuccessWindow = document.querySelector('#success').
                             content.querySelector('div');
 
   var main = document.querySelector('main'); // куда клонируем
-  var timeIn = noticeForm.querySelector('#timein');
-  var timeOut = noticeForm.querySelector('#timeout');
-  var propertyType = noticeForm.querySelector('#type');
-  var price = noticeForm.querySelector('#price');
+  var timeIn = notice.querySelector('#timein');
+  var timeOut = notice.querySelector('#timeout');
+  var propertyType = notice.querySelector('#type');
+  var price = notice.querySelector('#price');
 
   var priceOfPropertyMap = {
     bungalo: 0,
@@ -23,7 +23,7 @@
   };
 
   var fillAddressField = function (x, y) {
-    addressField.setAttribute('value', x + ', ' + y);
+    addressField.defaultValue = x + ', ' + y;
   };
 
   // соответствие полей кол-во комнат и кол-во гостей
@@ -68,7 +68,7 @@
 
   var onPropertyTypeChange = function () {
     price.placeholder = priceOfPropertyMap[propertyType.value];
-    price.setAttribute('min', priceOfPropertyMap[propertyType.value]);
+    price.min = priceOfPropertyMap[propertyType.value];
   };
 
   propertyType.addEventListener('change', onPropertyTypeChange);
@@ -87,7 +87,7 @@
   var closeSuccessWindow = function () {
     var successWindow = main.querySelector('.success');
     window.util.removeElement('.success');
-    noticeForm.reset();
+    notice.reset();
     document.removeEventListener('keydown', onDocumentEscPress);
     successWindow.removeEventListener('click', onSuccessWindowClick);
   };
@@ -103,34 +103,33 @@
   // отправка данных формы
 
   var onSubmitPress = function (evt) {
-    window.backend.send(new FormData(noticeForm), onSuccessSend, window.page.errorHandler);
+    window.backend.send(new FormData(notice), onSuccessSend, window.page.errorHandler);
     evt.preventDefault();
-    noticeForm.removeEventListener('submit', onSubmitPress);
+    notice.removeEventListener('submit', onSubmitPress);
   };
 
-  noticeForm.addEventListener('submit', onSubmitPress);
+  notice.addEventListener('submit', onSubmitPress);
 
   // сброс введенных данных в форме
 
   var onResetPress = function () {
-    noticeForm.reset();
-    window.preview.avatarPreview.setAttribute('src', 'img/muffin-grey.svg');
+    window.preview.avatar.src = 'img/muffin-grey.svg';
     window.preview.adFormPhoto.innerHTML = '';
     window.page.deactivate();
     window.card.remove();
     window.pin.remove();
-    noticeForm.removeEventListener('reset', onResetPress);
+    notice.removeEventListener('reset', onResetPress);
   };
 
-  noticeForm.addEventListener('reset', onResetPress);
+  notice.addEventListener('reset', onResetPress);
 
   var addListeners = function () {
     roomNumber.addEventListener('change', onRoomsCapasityChange);
     capacity.addEventListener('change', onRoomsCapasityChange);
     timeIn.addEventListener('change', onTimeInChange);
     timeOut.addEventListener('change', onTimeOutChange);
-    noticeForm.addEventListener('submit', onSubmitPress);
-    noticeForm.addEventListener('reset', onResetPress);
+    notice.addEventListener('submit', onSubmitPress);
+    notice.addEventListener('reset', onResetPress);
     propertyType.addEventListener('change', onPropertyTypeChange);
   };
 
@@ -143,7 +142,7 @@
   };
 
   window.form = {
-    noticeForm: noticeForm,
+    notice: notice,
     main: main,
     price: price,
     priceOfPropertyMap: priceOfPropertyMap,
