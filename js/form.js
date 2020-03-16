@@ -23,7 +23,7 @@
   };
 
   var fillAddressField = function (x, y) {
-    addressField.value = x + ', ' + y;
+    addressField.defaultValue = x + ', ' + y;
   };
 
   // соответствие полей кол-во комнат и кол-во гостей
@@ -113,7 +113,6 @@
   // сброс введенных данных в форме
 
   var onResetPress = function () {
-    notice.reset();
     window.preview.avatar.src = 'img/muffin-grey.svg';
     window.preview.adFormPhoto.innerHTML = '';
     window.page.deactivate();
