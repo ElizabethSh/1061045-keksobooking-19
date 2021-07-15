@@ -3,8 +3,8 @@
 (function () {
   var SUCCESS_CODE = 200;
   var TIMEOUT = 10000;
-  var URL_GET = 'https://javascript.pages.academy/keksobooking/data';
-  var URL_POST = 'https://javascript.pages.academy/keksobooking';
+  var URL_GET = 'https://21.javascript.pages.academy/keksobooking/data';
+  var URL_POST = 'https://21.javascript.pages.academy/keksobooking';
 
 
   // функция настройки xhr запроса
