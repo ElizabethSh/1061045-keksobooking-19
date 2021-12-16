@@ -108,8 +108,6 @@
     notice.removeEventListener('submit', onSubmitPress);
   };
 
-  notice.addEventListener('submit', onSubmitPress);
-
   // сброс введенных данных в форме
 
   var onResetPress = function () {
@@ -121,6 +119,7 @@
     notice.removeEventListener('reset', onResetPress);
   };
 
+  notice.addEventListener('submit', onSubmitPress);
   notice.addEventListener('reset', onResetPress);
 
   var addListeners = function () {
